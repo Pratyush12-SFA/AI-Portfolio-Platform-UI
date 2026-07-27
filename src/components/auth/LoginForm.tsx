@@ -35,11 +35,11 @@ export default function LoginForm() {
     }
   }
   return (
-    <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur-2xl shadow-[0_0_80px_rgba(168,85,247,0.15)]">
+    <div className="w-full max-w-md rounded-3xl border border-white/5 bg-white/[0.02] p-8 backdrop-blur-2xl shadow-[0_0_80px_rgba(245,158,11,0.05)]">
       <div>
-        <h2 className="text-3xl font-bold text-white">Welcome Back</h2>
+        <h2 className="text-3xl font-bold text-white tracking-tight">Welcome Back</h2>
 
-        <p className="mt-2 text-zinc-400">Sign in to manage your portfolio.</p>
+        <p className="mt-2 text-zinc-400 text-sm">Sign in to manage your portfolio.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -51,7 +51,7 @@ export default function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+            className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
           />
         </div>
 
@@ -63,24 +63,34 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+            className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            placeholder="."
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-          />
+        <div className="flex items-center justify-between py-1 text-sm">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="accent-amber-500"
+            />
 
-          <label>Remember Me</label>
+            <label htmlFor="rememberMe" className="text-zinc-400 select-none">Remember Me</label>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate("/forgot-password")}
+            className="text-amber-400 hover:text-amber-300 font-medium"
+          >
+            Forgot Password?
+          </button>
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 py-3 font-medium transition duration-300 hover:scale-[1.02] hover:shadow-[0_0_35px_rgba(168,85,247,0.45)] disabled:opacity-50"
+          className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 py-3 font-semibold text-black transition duration-300 hover:scale-[1.01] hover:shadow-[0_0_35px_rgba(245,158,11,0.3)] disabled:opacity-50"
         >
           {loading ? "Signing In..." : "Sign In"}
         </button>
@@ -98,12 +108,19 @@ export default function LoginForm() {
               if (!credenialResponse.credential) {
                 return;
               }
-              const response = await googleLoginUser(
-                credenialResponse.credential,
-              );
-              auth.login(response.accessToken);
-
-              navigate("/dashboard");
+              try {
+                const response = await googleLoginUser(
+                  credenialResponse.credential,
+                );
+                if (response && response.accessToken) {
+                  auth.login(response.accessToken);
+                  navigate("/dashboard");
+                } else {
+                  setError("Google Login failed: No access token returned");
+                }
+              } catch (e: any) {
+                setError(e.message || "Google Login Failed");
+              }
             }}
             onError={() => {
               setError("Google Login Failed");
@@ -117,7 +134,7 @@ export default function LoginForm() {
         <button
           type="button"
           onClick={() => navigate("/register")}
-          className="font-medium text-purple-400 hover:text-purple-300"
+          className="font-medium text-amber-400 hover:text-amber-300"
         >
           Create Account
         </button>
