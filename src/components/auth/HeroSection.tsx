@@ -1,7 +1,7 @@
 export default function HeroSection() {
   return (
     <div className="relative hidden overflow-hidden lg:flex">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#25104d_0%,#0b0b0f_55%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#402604_0%,#0b0b0f_55%)]" />
 
       <div className="relative z-10 flex w-full flex-col justify-between p-16">
         <div>
@@ -11,7 +11,7 @@ export default function HeroSection() {
         </div>
 
         <div className="max-w-xl">
-          <p className="mb-4 text-sm uppercase tracking-[0.3em] text-purple-400">
+          <p className="mb-4 text-sm uppercase tracking-[0.3em] text-amber-400">
             Premium Portfolio Platform
           </p>
 
@@ -29,7 +29,7 @@ export default function HeroSection() {
     software, AI and beautiful design.
   </p>
 
-  <p className="mt-6 text-sm text-purple-300">
+  <p className="mt-6 text-sm text-amber-300/80">
     Powered by .NET • React • AI
   </p>
 </>
@@ -52,7 +52,7 @@ type StatCardProps = {
 
 function StatCard({ title, value }: StatCardProps) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:border-purple-500/30">
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:border-amber-500/30">
       <p className="text-sm text-zinc-400">
         {title}
       </p>

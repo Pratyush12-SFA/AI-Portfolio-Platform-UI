@@ -58,6 +58,9 @@ export async function googleLogin(idToken: string) {
       idToken: idToken,
     }),
   });
+  if (!response.ok) {
+    throw new Error("Google Login failed on backend");
+  }
   return await response.json();
 }
 

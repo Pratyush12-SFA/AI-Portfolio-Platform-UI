@@ -23,4 +23,14 @@ namespace Auth {
     login: (token: string) => void;
     logout: () => Promise<void>;
   };
+
+  interface ResetPasswordRequest {
+    token: string;
+    newPassword: string;
+  }
+
+  interface ChangePasswordRequest {
+    oldPassword: string;
+    newPassword: string;
+  }
 }
