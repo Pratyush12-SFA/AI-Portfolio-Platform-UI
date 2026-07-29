@@ -63,7 +63,7 @@ export async function getProfile() {
   return await response.json();
 }
 
-export async function upsertProfile(profile: any) {
+export async function upsertProfile(profile: Portfolio.Profile) {
   const response = await apiFetch(`${API_URL}/profile`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -78,7 +78,7 @@ export async function getResumeData(type: string) {
   return await response.json();
 }
 
-export async function upsertResumeData(type: string, data: any) {
+export async function upsertResumeData(type: string, data: Record<string, unknown>) {
   const response = await apiFetch(`${API_URL}/resume/${type}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Search, Home, FileText, Globe, Briefcase, Bot, TrendingUp, MessageSquare, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  Search,
+  Home,
+  FileText,
+  Globe,
+  Briefcase,
+  Bot,
+  TrendingUp,
+  MessageSquare,
+  Settings,
+} from "lucide-react";
 
 interface CommandItem {
   id: string;
@@ -7,51 +18,112 @@ interface CommandItem {
   category: string;
   icon: React.ComponentType<any>;
   shortcut?: string;
+  path: string;
 }
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectCommand: (commandId: string) => void;
 }
 
 export default function CommandPalette({
   isOpen,
   onClose,
-  onSelectCommand,
 }: CommandPaletteProps) {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const commands: CommandItem[] = [
-    { id: "home", label: "Go to Workspace Home", category: "Navigation", icon: Home, shortcut: "H" },
-    { id: "resume", label: "Go to Resume Builder", category: "Navigation", icon: FileText, shortcut: "R" },
-    { id: "portfolio", label: "Go to Portfolio Workspace", category: "Navigation", icon: Globe, shortcut: "P" },
-    { id: "jobs", label: "Go to Jobs & ATS Matcher", category: "Navigation", icon: Briefcase, shortcut: "J" },
-    { id: "ai-assistant", label: "Go to AI Coach Chat", category: "Navigation", icon: Bot, shortcut: "A" },
-    { id: "analytics", label: "Go to Performance Analytics", category: "Navigation", icon: TrendingUp, shortcut: "T" },
-    { id: "messages", label: "Go to Recruiter Messages Inbox", category: "Navigation", icon: MessageSquare, shortcut: "M" },
-    { id: "settings", label: "Go to Account Settings", category: "Navigation", icon: Settings, shortcut: "S" },
-  ];
-
-  // Filter commands by search
-  const filteredCommands = commands.filter((cmd) =>
-    cmd.label.toLowerCase().includes(search.toLowerCase()) ||
-    cmd.category.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // Auto focus input when opened
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       setSearch("");
       setSelectedIndex(0);
+    }
+  }
+
+  const commands: CommandItem[] = [
+    {
+      id: "home",
+      label: "Go to Workspace Home",
+      category: "Navigation",
+      icon: Home,
+      shortcut: "H",
+      path: "/dashboard/home",
+    },
+    {
+      id: "resume",
+      label: "Go to Resume Builder",
+      category: "Navigation",
+      icon: FileText,
+      shortcut: "R",
+      path: "/dashboard/resume",
+    },
+    {
+      id: "portfolio",
+      label: "Go to Portfolio Workspace",
+      category: "Navigation",
+      icon: Globe,
+      shortcut: "P",
+      path: "/dashboard/portfolio",
+    },
+    {
+      id: "jobs",
+      label: "Go to Jobs & ATS Matcher",
+      category: "Navigation",
+      icon: Briefcase,
+      shortcut: "J",
+      path: "/dashboard/jobs",
+    },
+    {
+      id: "ai-assistant",
+      label: "Go to AI Coach Chat",
+      category: "Navigation",
+      icon: Bot,
+      shortcut: "A",
+      path: "/dashboard/ai-assistant",
+    },
+    {
+      id: "analytics",
+      label: "Go to Performance Analytics",
+      category: "Navigation",
+      icon: TrendingUp,
+      shortcut: "T",
+      path: "/dashboard/analytics",
+    },
+    {
+      id: "messages",
+      label: "Go to Recruiter Messages Inbox",
+      category: "Navigation",
+      icon: MessageSquare,
+      shortcut: "M",
+      path: "/dashboard/messages",
+    },
+    {
+      id: "settings",
+      label: "Go to Account Settings",
+      category: "Navigation",
+      icon: Settings,
+      shortcut: "S",
+      path: "/dashboard/settings",
+    },
+  ];
+
+  const filteredCommands = commands.filter(
+    (cmd) =>
+      cmd.label.toLowerCase().includes(search.toLowerCase()) ||
+      cmd.category.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  useEffect(() => {
+    if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isOpen]);
 
-  // Handle keyboard events inside palette
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
@@ -64,11 +136,14 @@ export default function CommandPalette({
         setSelectedIndex((prev) => (prev + 1) % filteredCommands.length);
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        setSelectedIndex((prev) => (prev - 1 + filteredCommands.length) % filteredCommands.length);
+        setSelectedIndex(
+          (prev) =>
+            (prev - 1 + filteredCommands.length) % filteredCommands.length,
+        );
       } else if (e.key === "Enter") {
         e.preventDefault();
         if (filteredCommands[selectedIndex]) {
-          onSelectCommand(filteredCommands[selectedIndex].id);
+          navigate(filteredCommands[selectedIndex].path);
           onClose();
         }
       }
@@ -76,20 +151,18 @@ export default function CommandPalette({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, selectedIndex, filteredCommands, onClose, onSelectCommand]);
+  }, [isOpen, selectedIndex, filteredCommands, onClose, navigate]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-start justify-center pt-[15vh] px-4 animate-fadeIn">
-      {/* Click outside to close */}
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-9999 flex items-start justify-center pt-[15vh] px-4 animate-fadeIn">
       <div className="absolute inset-0" onClick={onClose} />
 
       <div
         ref={containerRef}
         className="w-full max-w-xl bg-ascend-surface-elevated border border-ascend-border rounded-dialog shadow-floating overflow-hidden relative z-10 animate-scaleUp"
       >
-        {/* Search Header */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-ascend-border">
           <Search className="w-4 h-4 text-ascend-text-muted shrink-0" />
           <input
@@ -108,8 +181,7 @@ export default function CommandPalette({
           </div>
         </div>
 
-        {/* Commands List */}
-        <div className="max-h-[300px] overflow-y-auto p-2">
+        <div className="max-h-75 overflow-y-auto p-2">
           {filteredCommands.length === 0 ? (
             <div className="py-8 text-center text-xs text-ascend-text-muted">
               No actions found matching search.
@@ -126,7 +198,7 @@ export default function CommandPalette({
                   <button
                     key={cmd.id}
                     onClick={() => {
-                      onSelectCommand(cmd.id);
+                      navigate(cmd.path);
                       onClose();
                     }}
                     className={`w-full flex items-center justify-between px-3 py-2.5 rounded-button text-xs transition-all text-left ${
@@ -136,7 +208,9 @@ export default function CommandPalette({
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className={`w-4 h-4 ${isSelected ? "text-ascend-primary" : "text-ascend-text-secondary"}`} />
+                      <Icon
+                        className={`w-4 h-4 ${isSelected ? "text-ascend-primary" : "text-ascend-text-secondary"}`}
+                      />
                       <span>{cmd.label}</span>
                     </div>
                     {cmd.shortcut && (
@@ -153,19 +227,26 @@ export default function CommandPalette({
           )}
         </div>
 
-        {/* Footer shortcuts helper */}
         <div className="px-4 py-2 bg-black/20 border-t border-ascend-border flex items-center justify-between text-[9px] text-ascend-text-muted select-none">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-ascend-border font-mono">↑↓</kbd> to navigate
+              <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-ascend-border font-mono">
+                ↑↓
+              </kbd>{" "}
+              to navigate
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-ascend-border font-mono">Enter</kbd> to select
+              <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-ascend-border font-mono">
+                Enter
+              </kbd>{" "}
+              to select
             </span>
           </div>
           <div className="flex items-center gap-1">
             <span>Press</span>
-            <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-ascend-border font-mono">Ctrl+K</kbd>
+            <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-ascend-border font-mono">
+              Ctrl+K
+            </kbd>
             <span>anywhere to toggle</span>
           </div>
         </div>
