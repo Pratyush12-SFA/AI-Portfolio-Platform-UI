@@ -9,13 +9,13 @@ import {
   Smartphone,
   Globe,
 } from "lucide-react";
+import { useToast } from "../../../contexts/ToastContext";
 
 interface SettingsWorkspaceProps {
-  sessions: any[];
+  sessions: Portfolio.Session[];
   onRevokeSession: (sessionId: number) => Promise<void>;
-  onChangePassword: (e: React.FormEvent, data: any) => Promise<void>;
+  onChangePassword: (e: React.FormEvent, data: Record<string, string>) => Promise<void>;
   onVerificationRequest: () => Promise<void>;
-  triggerAlert: (type: "success" | "error", message: string) => void;
 }
 
 export default function SettingsWorkspace({
@@ -23,8 +23,8 @@ export default function SettingsWorkspace({
   onRevokeSession,
   onChangePassword,
   onVerificationRequest,
-  triggerAlert,
 }: SettingsWorkspaceProps) {
+  const { addToast } = useToast();
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -33,7 +33,7 @@ export default function SettingsWorkspace({
   const handleSubmitPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!oldPassword || !newPassword) {
-      triggerAlert("error", "Please fill in all password fields.");
+      addToast("error", "Please fill in all password fields.");
       return;
     }
     setIsChangingPassword(true);

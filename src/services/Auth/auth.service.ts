@@ -11,6 +11,7 @@ export async function login(
     body: JSON.stringify({
       email: request.email,
       password: request.password,
+      rememberMe: request.rememberMe,
     }),
   });
   if (!response.ok) {

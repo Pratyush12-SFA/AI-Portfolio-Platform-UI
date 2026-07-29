@@ -52,9 +52,9 @@ export function useResumeData(type: string) {
 export function useUpsertResumeData() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ type, data }: { type: string; data: any }) =>
+    mutationFn: ({ type, data }: { type: string; data: Record<string, unknown> }) =>
       upsertResumeData(type, data),
-    onSuccess: (_: any, variables: { type: string; data: any }) => {
+    onSuccess: (_: unknown, variables: { type: string; data: Record<string, unknown> }) => {
       queryClient.invalidateQueries({
         queryKey: portfolioKeys.resume(variables.type),
       });
@@ -67,7 +67,7 @@ export function useDeleteResumeData() {
   return useMutation({
     mutationFn: ({ type, id }: { type: string; id: number }) =>
       deleteResumeData(type, id),
-    onSuccess: (_: any, variables: { type: string; id: number }) => {
+    onSuccess: (_: unknown, variables: { type: string; id: number }) => {
       queryClient.invalidateQueries({
         queryKey: portfolioKeys.resume(variables.type),
       });

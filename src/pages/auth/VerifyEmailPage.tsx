@@ -7,33 +7,39 @@ export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token") || "";
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!token);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() => token ? "" : "Verification token is missing.");
 
   useEffect(() => {
-    if (!token) {
-      setError("Verification token is missing.");
-      setLoading(false);
-      return;
-    }
+    if (!token) return;
 
+    let active = true;
     async function doVerification() {
       try {
         const res = await verifyEmail(token);
-        if (res.success) {
-          setSuccess(true);
-        } else {
-          setError(res.message || "Email verification failed.");
+        if (active) {
+          if (res.success) {
+            setSuccess(true);
+          } else {
+            setError(res.message || "Email verification failed.");
+          }
         }
       } catch {
-        setError("Network error. Could not verify email.");
+        if (active) {
+          setError("Network error. Could not verify email.");
+        }
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     }
 
     doVerification();
+    return () => {
+      active = false;
+    };
   }, [token]);
 
   return (

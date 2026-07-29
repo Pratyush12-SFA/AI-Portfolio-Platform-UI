@@ -17,9 +17,16 @@ import {
 } from "lucide-react";
 
 export default function AICoachingPanel() {
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<Portfolio.ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Portfolio.ChatMessage[]>([]);
+  const [prevSessionId, setPrevSessionId] = useState<number | null>(activeSessionId);
+
+  if (activeSessionId !== prevSessionId) {
+    setPrevSessionId(activeSessionId);
+    setMessages([]);
+  }
+
   const [inputText, setInputText] = useState("");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -53,13 +60,57 @@ export default function AICoachingPanel() {
   };
 
   useEffect(() => {
-    loadSessions();
+    let active = true;
+    async function fetchSessions() {
+      try {
+        const data = await getChatSessions();
+        if (active) {
+          setSessions(data || []);
+          setActiveSessionId((prev) => {
+            if (data && data.length > 0 && prev === null) {
+              return data[0].id ?? data[0].Id;
+            }
+            return prev;
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchSessions();
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
-    if (activeSessionId !== null) {
-      loadMessages(activeSessionId);
+    const sessionId = activeSessionId;
+    if (sessionId === null || isNaN(sessionId)) {
+      return;
     }
+    const validSessionId = sessionId as number;
+
+    let active = true;
+    async function fetchMessages() {
+      setIsLoadingMessages(true);
+      try {
+        const data = await getChatMessages(validSessionId);
+        if (active) {
+          setMessages(data || []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (active) {
+          setIsLoadingMessages(false);
+        }
+      }
+    }
+    fetchMessages();
+
+    return () => {
+      active = false;
+    };
   }, [activeSessionId]);
 
   useEffect(() => {
@@ -175,7 +226,7 @@ export default function AICoachingPanel() {
             </div>
           ) : (
             sessions.map((sess) => {
-              const sessId = sess.id ?? sess.Id;
+              const sessId = sess.id ?? sess.id;
               return (
                 <button
                   key={sessId}
@@ -188,7 +239,7 @@ export default function AICoachingPanel() {
                 >
                   <MessageSquare className="w-4 h-4 shrink-0" />
                   <span className="text-xs font-medium truncate">
-                    {sess.title ?? sess.Title}
+                    {sess.title ?? sess.title}
                   </span>
                 </button>
               );
@@ -258,7 +309,7 @@ export default function AICoachingPanel() {
                 </div>
               ) : (
                 messages.map((msg, idx) => {
-                  const role = msg.role ?? msg.Role;
+                  const role = msg.role ?? msg.role;
                   const isAssistant =
                     role === "Assistant" ||
                     role === "assistant" ||
@@ -292,7 +343,9 @@ export default function AICoachingPanel() {
                             : "bg-amber-600 text-white"
                         }`}
                       >
-                        <p className="whitespace-pre-wrap">{msg.content ?? msg.Content}</p>
+                        <p className="whitespace-pre-wrap">
+                          {msg.content ?? msg.content}
+                        </p>
                       </div>
                     </div>
                   );

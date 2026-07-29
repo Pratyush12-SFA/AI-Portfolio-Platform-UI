@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Mail,
   Trash2,
@@ -21,70 +21,19 @@ interface ContactMessage {
 }
 
 export default function MessagesWorkspace() {
-  const [messages, setMessages] = useState<ContactMessage[]>([]);
-  const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
-
-  // Initialize messages list with preset mock recruiter messages + any local updates
-  useEffect(() => {
+  const [messages, setMessages] = useState<ContactMessage[]>(() => {
     const local = localStorage.getItem("workspace_received_messages");
     if (local) {
       try {
-        const parsed = JSON.parse(local);
-        setMessages(parsed);
-        if (parsed.length > 0) {
-          setActiveMessageId(parsed[0].id);
-        }
+        return JSON.parse(local);
       } catch {
-        initializeMockMessages();
+        return [];
       }
-    } else {
-      initializeMockMessages();
     }
-  }, []);
+    return [];
+  });
 
-  const initializeMockMessages = () => {
-    const mocks: ContactMessage[] = [
-      {
-        id: "msg-mock-1",
-        name: "Sarah Jenkins",
-        company: "Stripe",
-        email: "sjenkins@stripe.com",
-        subject: "Opportunity: Lead UI Systems Architect",
-        message:
-          "Hi Pratyush,\n\nI reviewed your AI-driven Portfolio and was extremely impressed by your experience mapping and system architectures. We are currently looking for a Lead UI Systems Architect to join our design systems division at Stripe.\n\nYour profile indicates deep expertise in React 19, Vite, and custom engineering frameworks. I would love to schedule a brief 15-minute consultation to chat about what you are looking for in your next role.\n\nBest regards,\nSarah Jenkins\nPrincipal Executive Talent - Stripe",
-        date: "Yesterday, 3:14 PM",
-        read: false,
-      },
-      {
-        id: "msg-mock-2",
-        name: "Marcus Aurelius",
-        company: "Vercel",
-        email: "marcus.a@vercel.com",
-        subject: "Vite + Tailwind engineering feedback",
-        message:
-          "Hey Pratyush,\n\nGuillermo forwarded your portfolio URL over to our DevRel squad. The custom theme integrations you built (especially the Cyberpunk responsive layout) are incredible! The transitions are remarkably smooth.\n\nWe have a few remote-first roles opening up next month for Senior Developer Advocates. Let me know if you would be open to aligning on a quick sync next week!\n\nBest,\nMarcus\nEngineering Manager, Vercel",
-        date: "3 days ago",
-        read: true,
-      },
-      {
-        id: "msg-mock-3",
-        name: "David Hass",
-        company: "Tesla",
-        email: "dhass@tesla.com",
-        subject: "Recruiter inquiry regarding career timeline",
-        message:
-          "Hello Pratyush,\n\nI am a technical sourcer at Tesla supporting our Autopilot UI teams. I noticed your career highlights and the projects you built focusing on telemetry data charts. Are you currently open to exploring new roles in Palo Alto or remote configurations?\n\nLet me know and we can set up some technical alignment.\n\nBest,\nDavid Hass",
-        date: "1 week ago",
-        read: true,
-      },
-    ];
-
-    setMessages(mocks);
-    localStorage.setItem("workspace_received_messages", JSON.stringify(mocks));
-    if (mocks.length > 0) {
-      setActiveMessageId(mocks[0].id);
-    }
-  };
+  const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
 
   const handleSelectMessage = (id: string) => {
     setActiveMessageId(id);
@@ -163,7 +112,7 @@ export default function MessagesWorkspace() {
 
                 <div className="space-y-1 pr-4">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-white truncate max-w-[150px]">
+                    <span className="text-xs font-bold text-white truncate max-w-37.5">
                       {msg.name}
                     </span>
                     {msg.company && (

@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/Authcontext/queries";
 
-export default function PrrotectedRoute({
+export default function ProtectedRoute({
     children
 }: {
     children: React.ReactNode;

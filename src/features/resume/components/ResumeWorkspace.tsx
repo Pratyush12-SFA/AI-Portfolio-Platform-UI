@@ -19,23 +19,23 @@ import {
   suggestMissingSkills,
   generateResumeSummary,
 } from "../../../services/ai.service";
+import { useToast } from "../../../contexts/ToastContext";
 
 interface ResumeWorkspaceProps {
-  educations: any[];
-  experiences: any[];
-  projects: any[];
-  skills: any[];
-  certifications: any[];
-  achievements: any[];
-  languages: any[];
-  socialLinks: any[];
-  customSections: any[];
-  profile: any;
-  onUpsertItem: (type: string, data: any) => Promise<void>;
-  onDeleteItem: (type: string, id: number) => Promise<void>;
-  onSaveProfile: (profileData: any) => Promise<void>;
+  educations: Portfolio.Education[];
+  experiences: Portfolio.Experience[];
+  projects: Portfolio.Project[];
+  skills: Portfolio.Skill[];
+  certifications: Portfolio.Certification[];
+  achievements: Portfolio.Achievement[];
+  languages: Portfolio.Language[];
+  socialLinks: Portfolio.SocialLink[];
+  customSections: Portfolio.CustomSection[];
+  profile?: Portfolio.Profile;
+  onUpsertItem: (type: string, data: Record<string, unknown>) => Promise<void>;
+  onDeleteItem: (type: string, id: number | undefined) => Promise<void>;
+  onSaveProfile: (profileData: Portfolio.Profile) => Promise<void>;
   loadAllData: () => Promise<void>;
-  triggerAlert: (type: "success" | "error", message: string) => void;
 }
 
 export default function ResumeWorkspace({
@@ -51,8 +51,8 @@ export default function ResumeWorkspace({
   onUpsertItem,
   onDeleteItem,
   onSaveProfile,
-  triggerAlert,
 }: ResumeWorkspaceProps) {
+  const { addToast } = useToast();
   // Navigation Tabs within Resume
   const [activeSubTab, setActiveSubTab] = useState<string>("summary");
 
@@ -90,7 +90,7 @@ export default function ResumeWorkspace({
       setShowEditModal(false);
       setModalItem({});
     } catch {
-      triggerAlert("error", "Failed to save item.");
+      addToast("error", "Failed to save item.");
     } finally {
       setIsAIProcessing(false);
     }
@@ -145,7 +145,7 @@ export default function ResumeWorkspace({
         setShowDiffModal(true);
       }
     } catch {
-      triggerAlert("error", "AI Summary generation failed.");
+      addToast("error", "AI Summary generation failed.");
     } finally {
       setIsAIProcessing(false);
     }
@@ -157,9 +157,9 @@ export default function ResumeWorkspace({
       const updatedProfile = { ...profile, Summary: summaryText };
       await onSaveProfile(updatedProfile);
       setIsEditingSummary(false);
-      triggerAlert("success", "Summary updated!");
+      addToast("success", "Summary updated!");
     } catch {
-      triggerAlert("error", "Failed to save summary.");
+      addToast("error", "Failed to save summary.");
     } finally {
       setIsAIProcessing(false);
     }
@@ -190,12 +190,12 @@ export default function ResumeWorkspace({
           const updated = { ...experience, Description: result };
           await onUpsertItem("experience", updated);
           setShowDiffModal(false);
-          triggerAlert("success", "Experience updated with AI revision!");
+          addToast("success", "Experience updated with AI revision!");
         };
       });
       setShowDiffModal(true);
     } catch {
-      triggerAlert("error", "AI optimization failed.");
+      addToast("error", "AI optimization failed.");
     } finally {
       setIsAIProcessing(false);
     }
@@ -226,12 +226,12 @@ export default function ResumeWorkspace({
           const updated = { ...project, Description: result };
           await onUpsertItem("projects", updated);
           setShowDiffModal(false);
-          triggerAlert("success", "Project updated with AI metrics!");
+          addToast("success", "Project updated with AI metrics!");
         };
       });
       setShowDiffModal(true);
     } catch {
-      triggerAlert("error", "AI optimization failed.");
+      addToast("error", "AI optimization failed.");
     } finally {
       setIsAIProcessing(false);
     }
@@ -245,7 +245,7 @@ export default function ResumeWorkspace({
       const res = await suggestMissingSkills(expText, targetRole);
       setSuggestedSkills(res.result || []);
     } catch {
-      triggerAlert("error", "Failed to retrieve skill suggestions.");
+      addToast("error", "Failed to retrieve skill suggestions.");
     } finally {
       setLoadingSuggestions(false);
     }
@@ -259,9 +259,9 @@ export default function ResumeWorkspace({
         Category: "Technical",
       });
       setSuggestedSkills((prev) => prev.filter((s) => s !== skillName));
-      triggerAlert("success", `Added ${skillName} to resume!`);
+      addToast("success", `Added ${skillName} to resume!`);
     } catch {
-      triggerAlert("error", "Failed to add skill.");
+      addToast("error", "Failed to add skill.");
     }
   };
 
@@ -272,6 +272,7 @@ export default function ResumeWorkspace({
     { id: "skills", label: "Skills Matrix", icon: ListPlus },
     { id: "education", label: "Education & Certs", icon: GraduationCap },
     { id: "others", label: "Other Sections", icon: Languages },
+    { id: "preview", label: "Live Resume Preview", icon: Sparkles },
   ];
 
   return (
@@ -305,6 +306,233 @@ export default function ResumeWorkspace({
             <span className="text-xs font-medium text-white">
               Ascend AI processing...
             </span>
+          </div>
+        </div>
+      )}
+
+      {/* TABS PANELS */}
+
+      {/* 0. LIVE RESUME PREVIEW */}
+      {activeSubTab === "preview" && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center no-print px-1">
+            <div>
+              <h3 className="text-sm font-bold text-white tracking-wide">
+                Live Resume Preview
+              </h3>
+              <p className="text-[10px] text-ascend-text-secondary font-light">
+                Preview your generated resume in the premium two-column template. Click "Print Resume" to export as PDF.
+              </p>
+            </div>
+            <button
+              onClick={() => window.print()}
+              className="px-4 py-2 bg-gradient-to-r from-ascend-primary to-ascend-ai hover:from-[#F5B301] hover:to-[#C08500] text-black text-xs font-black rounded-button flex items-center gap-1.5 shadow-lg transition-all"
+            >
+              <span>Print / Export PDF</span>
+            </button>
+          </div>
+
+          <style dangerouslySetInnerHTML={{ __html: `
+            @media print {
+              body, html {
+                background: white !important;
+                color: black !important;
+                margin: 0 !important;
+                padding: 0 !important;
+              }
+              aside, header, nav, button, .no-print, [role="dialog"], .fixed {
+                display: none !important;
+              }
+              main {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+              }
+              .resume-preview-container {
+                border: none !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                background: white !important;
+                color: black !important;
+              }
+              * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+            }
+          `}} />
+
+          <div className="resume-preview-container w-full max-w-[820px] mx-auto bg-white text-black rounded-card shadow-2xl border border-zinc-200 overflow-hidden flex flex-col font-sans select-text">
+            <div className="bg-[#2B3545] text-white py-8 px-10 flex flex-col items-center md:items-end justify-center text-center md:text-right relative">
+              <div className="absolute left-10 -bottom-8 w-24 h-24 rounded-full bg-zinc-200 border-4 border-white overflow-hidden shadow-lg hidden md:block">
+                <img 
+                  src={profile?.ProfilePictureUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"} 
+                  alt="Avatar" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-wide uppercase">
+                {profile?.FullName || "Riya Sharma"}
+              </h1>
+              <p className="text-sm font-semibold tracking-wider text-zinc-300 mt-1 uppercase">
+                {profile?.Headline || "Computer Science Graduate"}
+              </p>
+            </div>
+
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-[1fr_2fr]">
+              <div className="bg-[#E9EBEE] p-8 space-y-8 border-r border-zinc-300">
+                <div className="h-10 hidden md:block" />
+
+                <div className="space-y-3">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] border-b-2 border-zinc-400 pb-1.5">
+                    Contact
+                  </h3>
+                  <ul className="space-y-2 text-[11px] text-zinc-700 leading-relaxed font-medium">
+                    <li className="flex items-center gap-2">
+                      <span className="font-bold text-[#2B3545]">📞</span>
+                      <span>{profile?.PhoneNumber || "+91-98765432XX"}</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="font-bold text-[#2B3545]">✉️</span>
+                      <span className="break-all">{profile?.ContactEmail || "riya.sharma@email.com"}</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="font-bold text-[#2B3545]">📍</span>
+                      <span>{profile?.Address || "Location (City, State)"}</span>
+                    </li>
+                    {socialLinks && socialLinks.length > 0 && (
+                      <li className="flex items-center gap-2">
+                        <span className="font-bold text-[#2B3545]">🔗</span>
+                        <span className="break-all">{socialLinks[0].Url.replace("https://", "")}</span>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+
+                {certifications && certifications.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] border-b-2 border-zinc-400 pb-1.5">
+                      Certifications
+                    </h3>
+                    <ul className="list-disc pl-4 space-y-2 text-[11px] text-zinc-700 font-medium">
+                      {certifications.map((cert) => (
+                        <li key={cert.Id}>
+                          <span className="font-bold text-zinc-900">{cert.Name}</span>
+                          {cert.Issuer && <span className="text-[10px] block text-zinc-500">({cert.Issuer})</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {languages && languages.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] border-b-2 border-zinc-400 pb-1.5">
+                      Languages
+                    </h3>
+                    <ul className="list-disc pl-4 space-y-1.5 text-[11px] text-zinc-700 font-medium">
+                      {languages.map((lang) => (
+                        <li key={lang.Id}>
+                          {lang.Name} {lang.ProficiencyLevel && <span className="text-zinc-500 font-normal">({lang.ProficiencyLevel})</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-8 space-y-8 bg-white">
+                <div className="relative pl-6 border-l border-zinc-200">
+                  <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#2B3545] border border-white" />
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] mb-2 flex items-center gap-2">
+                    Career Objective
+                  </h3>
+                  <p className="text-[11px] text-zinc-700 leading-relaxed font-light select-text">
+                    {profile?.Summary || "Motivated Computer Science graduate eager to apply programming and analytical skills in a dynamic organization."}
+                  </p>
+                </div>
+
+                {skills && skills.length > 0 && (
+                  <div className="relative pl-6 border-l border-zinc-200">
+                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#2B3545] border border-white" />
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] mb-3 flex items-center gap-2">
+                      Key Skills
+                    </h3>
+                    <ul className="list-disc pl-4 space-y-1.5 text-[11px] text-zinc-700 font-medium">
+                      {skills.map((skill) => (
+                        <li key={skill.Id}>
+                          {skill.Category ? (
+                            <span><strong className="text-zinc-900">{skill.Category}:</strong> {skill.Name}</span>
+                          ) : (
+                            <span>{skill.Name}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {educations && educations.length > 0 && (
+                  <div className="relative pl-6 border-l border-zinc-200">
+                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#2B3545] border border-white" />
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] mb-3 flex items-center gap-2">
+                      Education
+                    </h3>
+                    <div className="space-y-4">
+                      {educations.map((edu) => (
+                        <div key={edu.Id} className="space-y-1 text-[11px]">
+                          <div className="flex justify-between font-bold text-zinc-900">
+                            <span>{edu.Degree} {edu.FieldOfStudy && `in ${edu.FieldOfStudy}`}</span>
+                            <span className="text-[#2B3545] text-[10px] font-normal">
+                              {new Date(edu.StartDate).getFullYear()} - {edu.EndDate ? new Date(edu.EndDate).getFullYear() : "Present"}
+                            </span>
+                          </div>
+                          <div className="text-zinc-700 font-semibold">{edu.Institution}</div>
+                          {edu.Grade && <div className="text-zinc-500 text-[10px]">{edu.Grade}</div>}
+                          {edu.Description && <div className="text-zinc-600 font-light mt-1 text-[10px]">{edu.Description}</div>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {((projects && projects.length > 0) || (experiences && experiences.length > 0)) && (
+                  <div className="relative pl-6 border-l border-zinc-200">
+                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#2B3545] border border-white" />
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] mb-3 flex items-center gap-2">
+                      Projects & Experience
+                    </h3>
+                    <div className="space-y-4">
+                      {experiences.map((exp) => (
+                        <div key={exp.Id} className="space-y-1 text-[11px]">
+                          <div className="flex justify-between font-bold text-zinc-900">
+                            <span>{exp.Position} at {exp.Company || exp.CompanyName}</span>
+                            <span className="text-[#2B3545] text-[10px] font-normal">
+                              {new Date(exp.StartDate).getFullYear()} - {exp.IsCurrent ? "Present" : exp.EndDate ? new Date(exp.EndDate).getFullYear() : ""}
+                            </span>
+                          </div>
+                          {exp.Location && <div className="text-zinc-500 text-[10px]">{exp.Location}</div>}
+                          {exp.Description && <p className="text-zinc-600 font-light mt-1 text-[10px] whitespace-pre-line">{exp.Description}</p>}
+                        </div>
+                      ))}
+                      {projects.map((proj) => (
+                        <div key={proj.Id} className="space-y-1 text-[11px]">
+                          <div className="flex justify-between font-bold text-zinc-900">
+                            <span>{proj.Title}</span>
+                            {proj.TechStack && <span className="text-[#2B3545] text-[10px] font-normal">({proj.TechStack})</span>}
+                          </div>
+                          {proj.Description && <p className="text-zinc-600 font-light mt-1 text-[10px]">{proj.Description}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

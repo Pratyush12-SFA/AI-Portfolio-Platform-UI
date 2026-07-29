@@ -1,17 +1,17 @@
 import { useState } from "react";
+import { useToast } from "../../../contexts/ToastContext";
 import { Globe, ExternalLink, Check, Loader2 } from "lucide-react";
 
 interface PortfolioWorkspaceProps {
-  profile: any;
-  onSaveProfile: (profileData: any) => Promise<void>;
-  triggerAlert: (type: "success" | "error", message: string) => void;
+  profile?: Portfolio.Profile;
+  onSaveProfile: (profileData: Portfolio.Profile) => Promise<void>;
 }
 
 export default function PortfolioWorkspace({
   profile,
   onSaveProfile,
-  triggerAlert,
 }: PortfolioWorkspaceProps) {
+  const { addToast } = useToast();
   const [selectedTheme, setSelectedTheme] = useState(
     profile?.ThemeName || "ModernDark",
   );
@@ -57,9 +57,9 @@ export default function PortfolioWorkspace({
         CustomSlug: customSlug.trim().toLowerCase(),
       };
       await onSaveProfile(updatedProfile);
-      triggerAlert("success", "Portfolio settings saved successfully!");
+      addToast("success", "Portfolio settings saved successfully!");
     } catch {
-      triggerAlert("error", "Failed to update portfolio settings.");
+      addToast("error", "Failed to update portfolio settings.");
     } finally {
       setIsSaving(false);
     }

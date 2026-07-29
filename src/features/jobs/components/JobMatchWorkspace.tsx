@@ -17,13 +17,13 @@ import {
   improveResumeSection,
 } from "../../../services/ai.service";
 import type { ATSAnalysisResult } from "../../../services/ai.service";
+import { useToast } from "../../../contexts/ToastContext";
 
 interface JobMatchWorkspaceProps {
-  skills: any[];
-  experiences: any[];
-  profile: any;
+  skills: Portfolio.Skill[];
+  experiences: Portfolio.Experience[];
+  profile?: Portfolio.Profile;
   onAddSkill: (skillName: string) => Promise<void>;
-  triggerAlert: (type: "success" | "error", message: string) => void;
 }
 
 export default function JobMatchWorkspace({
@@ -31,8 +31,8 @@ export default function JobMatchWorkspace({
   experiences,
   profile,
   onAddSkill,
-  triggerAlert,
 }: JobMatchWorkspaceProps) {
+  const { addToast } = useToast();
   const [jobDescription, setJobDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [atsResult, setAtsResult] = useState<ATSAnalysisResult | null>(null);
@@ -65,10 +65,10 @@ export default function JobMatchWorkspace({
     try {
       const result = await analyzeATSScore(resumeContent, jobDescription);
       setAtsResult(result);
-      triggerAlert("success", "ATS Scan complete!");
+      addToast("success", "ATS Scan complete!");
     } catch (err) {
       console.error(err);
-      triggerAlert("error", "Failed to run ATS scanner.");
+      addToast("error", "Failed to run ATS scanner.");
     } finally {
       setIsLoading(false);
     }
@@ -91,10 +91,10 @@ export default function JobMatchWorkspace({
         `Draft a highly professional and tailored cover letter for this candidate based on the following job description:\n\n${jobDescription}`,
       );
       setCoverLetter(res.result);
-      triggerAlert("success", "Cover Letter generated successfully!");
+      addToast("success", "Cover Letter generated successfully!");
     } catch (err) {
       console.error(err);
-      triggerAlert("error", "Cover Letter generation failed.");
+      addToast("error", "Cover Letter generation failed.");
     } finally {
       setIsGeneratingLetter(false);
     }
@@ -112,9 +112,9 @@ export default function JobMatchWorkspace({
           matchedKeywords: [...atsResult.matchedKeywords, skillName],
         });
       }
-      triggerAlert("success", `Added ${skillName} to your skills!`);
+      addToast("success", `Added ${skillName} to your skills!`);
     } catch {
-      triggerAlert("error", "Failed to add skill.");
+      addToast("error", "Failed to add skill.");
     }
   };
 
@@ -169,7 +169,7 @@ export default function JobMatchWorkspace({
           <button
             onClick={handleScanATS}
             disabled={isLoading || !jobDescription.trim() || isGeneratingLetter}
-            className="px-6 py-2.5 rounded-button bg-gradient-to-r from-ascend-primary to-ascend-ai hover:from-[#F5B301] hover:to-[#C08500] text-black text-xs font-black transition-all flex items-center gap-1.5 shadow-lg disabled:opacity-40"
+            className="px-6 py-2.5 rounded-button bg-linear-to-r from-ascend-primary to-ascend-ai hover:from-[#F5B301] hover:to-[#C08500] text-black text-xs font-black transition-all flex items-center gap-1.5 shadow-lg disabled:opacity-40"
           >
             {isLoading ? (
               <>
