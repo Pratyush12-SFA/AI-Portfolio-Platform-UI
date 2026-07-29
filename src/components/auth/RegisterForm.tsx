@@ -1,131 +1,233 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../../queries/auth.queries";
+import { useForm } from "react-hook-form";
+import { registerUser, googleLoginUser } from "../../queries/auth.queries";
 import { useAuth } from "../../contexts/Authcontext/queries";
+import { registerSchema } from "../../lib/validations/auth";
+import type { RegisterFormData } from "../../lib/validations/auth";
+import { GoogleLogin } from "@react-oauth/google";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
+
+const resolver = (data: RegisterFormData) => {
+  const result = registerSchema.safeParse(data);
+  if (result.success) return { values: result.data, errors: {} };
+  const fieldErrors = result.error.issues.reduce((acc, issue) => {
+    const path = issue.path.join(".");
+    if (!acc[path]) acc[path] = { message: issue.message, type: "validation" };
+    return acc;
+  }, {} as Record<string, { message: string; type: string }>);
+  return { values: {}, errors: fieldErrors };
+};
 
 export default function RegisterForm() {
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState("");
   const auth = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver,
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
+  const hasGoogleClient =
+    !!import.meta.env.VITE_GOOGLE_CLIENT_ID &&
+    import.meta.env.VITE_GOOGLE_CLIENT_ID !== "disabled-placeholder-client-id";
+
+  async function onSubmit(data: RegisterFormData) {
     try {
       setLoading(true);
       setError("");
-
-      if (password !== confirmPassword) {
-        setError("Passwords do not match");
-        return;
-      }
       const response = await registerUser({
-        fullName,
-        email,
-        password,
+        fullName: data.fullName,
+        email: data.email,
+        password: data.password,
       });
-
       auth.login(response.accessToken);
       navigate("/dashboard");
     } catch {
-      setError("Registration failed");
+      setError("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
   }
-  return (
-    <div className="w-full max-w-md rounded-3xl border border-white/5 bg-white/[0.02] p-8 backdrop-blur-2xl shadow-[0_0_80px_rgba(245,158,11,0.05)]">
-      <div>
-        <h2 className="text-3xl font-bold text-white tracking-tight">Welcome!</h2>
 
-        <p className="mt-2 text-zinc-400 text-sm">Sign up to manage your portfolio.</p>
+  return (
+    <div className="w-full max-w-md">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-full mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+          <span className="text-[11px] font-semibold text-blue-600 tracking-wide">
+            Get started for free
+          </span>
+        </div>
+        <h2
+          className="text-3xl font-bold text-gray-900 tracking-tight"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Create your account
+        </h2>
+        <p className="mt-2 text-sm text-gray-500">
+          Join Ascend and accelerate your career with AI.
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Full Name */}
         <div>
-          <label className="mb-2 block text-sm text-zinc-400">Full Name</label>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            Full Name
+          </label>
           <input
             type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="John Doe"
-            className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+            {...register("fullName")}
+            placeholder="Jane Doe"
+            className="input-light w-full px-4 py-3 text-sm"
           />
+          {errors.fullName && (
+            <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>
+          )}
         </div>
-        <div>
-          <label className="mb-2 block text-sm text-zinc-400">Email</label>
 
+        {/* Email */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            Email
+          </label>
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("email")}
             placeholder="you@example.com"
-            className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+            className="input-light w-full px-4 py-3 text-sm"
           />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+          )}
         </div>
 
+        {/* Password */}
         <div>
-          <label className="mb-2 block text-sm text-zinc-400">Password</label>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              {...register("password")}
+              placeholder="••••••••"
+              className="input-light w-full px-4 py-3 text-sm pr-11"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((p) => !p)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+          )}
+        </div>
 
+        {/* Confirm Password */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            Confirm Password
+          </label>
           <input
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register("confirmPassword")}
             placeholder="••••••••"
-            className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+            className="input-light w-full px-4 py-3 text-sm"
           />
+          {errors.confirmPassword && (
+            <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+          )}
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm text-zinc-400">Confirm Password</label>
+        {/* Error */}
+        {error && (
+          <div className="px-3 py-2.5 bg-red-50 border border-red-100 rounded-lg">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
 
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="••••••••"
-            className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-          />
-        </div>
-
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 py-3 font-semibold text-black transition duration-300 hover:scale-[1.01] hover:shadow-[0_0_35px_rgba(245,158,11,0.3)] disabled:opacity-50"
+          className="btn-primary w-full py-3 text-sm rounded-xl disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {loading ? "Signing Up..." : "Sign Up"}
+          {loading ? (
+            <span className="flex items-center gap-2 justify-center">
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Creating account...
+            </span>
+          ) : (
+            <span className="flex items-center gap-2 justify-center">
+              Create Account
+              <ArrowRight className="w-4 h-4" />
+            </span>
+          )}
         </button>
 
-        <div className="flex items-center gap-3 py-2">
-          <div className="h-px flex-1 bg-white/10" />
+        {hasGoogleClient && (
+          <>
+            <div className="flex items-center gap-3 py-1">
+              <div className="h-px flex-1 bg-gray-200" />
+              <span className="text-xs text-gray-400 font-medium">or</span>
+              <div className="h-px flex-1 bg-gray-200" />
+            </div>
 
-          <span className="text-sm text-zinc-500">OR</span>
-
-          <div className="h-px flex-1 bg-white/10" />
-        </div>
-
-        <button
-          type="button"
-          onClick={() => navigate("/login")}
-          className="w-full rounded-2xl border border-white/10 bg-white/5 py-3 transition duration-300 hover:-translate-y-0.5 hover:bg-white/10 text-sm font-semibold"
-        >
-          Continue with Google (Sign In)
-        </button>
+            <div className="w-full flex justify-center">
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  if (!credentialResponse.credential) return;
+                  try {
+                    const response = await googleLoginUser(
+                      credentialResponse.credential
+                    );
+                    if (response && response.accessToken) {
+                      auth.login(response.accessToken);
+                      navigate("/dashboard");
+                    } else {
+                      setError("Google sign up failed: No access token returned");
+                    }
+                  } catch (e: unknown) {
+                    setError(e instanceof Error ? e.message : "Google sign up failed");
+                  }
+                }}
+                onError={() => {
+                  setError("Google sign up failed");
+                }}
+              />
+            </div>
+          </>
+        )}
       </form>
 
-      <p className="mt-8 text-center text-sm text-zinc-400">
+      <p className="mt-8 text-center text-sm text-gray-500">
         Already have an account?{" "}
         <button
           type="button"
           onClick={() => navigate("/login")}
-          className="font-medium text-amber-400 hover:text-amber-300"
+          className="font-semibold text-[#0052FF] hover:text-[#0040CC] transition-colors"
         >
           Sign In
         </button>

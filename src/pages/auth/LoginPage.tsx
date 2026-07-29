@@ -11,10 +11,10 @@ export default function LoginPage() {
         );
     }
     return (
-        <div className="min-h-screen bg-[#0b0b0f] text-white">
-            <div className="grid min-h-screen lg: grid-cols-[60%_40%]">
+        <div className="min-h-screen bg-white">
+            <div className="grid min-h-screen lg:grid-cols-[55%_45%]">
                 <HeroSection />
-                <div className="flex items-center justify-center p-6 lg:p-12">
+                <div className="flex items-center justify-center p-8 lg:p-16 bg-white">
                     <LoginForm />
                 </div>
             </div>

@@ -24,7 +24,7 @@ import {
 interface PersistentAIAssistantProps {
   isOpen?: boolean;
   onClose?: () => void;
-  floatingMode?: boolean; // True when showing inside a drawer/modal on mobile
+  floatingMode?: boolean;
 }
 
 export default function PersistentAIAssistant({
@@ -32,12 +32,23 @@ export default function PersistentAIAssistant({
   onClose,
   floatingMode = false,
 }: PersistentAIAssistantProps) {
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<Portfolio.ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<number | null>(() => {
     const saved = localStorage.getItem("active_chat_session_id");
-    return saved ? parseInt(saved) : null;
+    if (!saved || saved === "NaN") return null;
+    const parsed = parseInt(saved);
+    return isNaN(parsed) ? null : parsed;
   });
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Portfolio.ChatMessage[]>([]);
+  const [prevSessionId, setPrevSessionId] = useState<number | null>(
+    activeSessionId,
+  );
+
+  if (activeSessionId !== prevSessionId) {
+    setPrevSessionId(activeSessionId);
+    setMessages([]);
+  }
+
   const [inputText, setInputText] = useState("");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -54,7 +65,7 @@ export default function PersistentAIAssistant({
       setSessions(data || []);
       if (data && data.length > 0) {
         if (activeSessionId === null || autoSelect) {
-          const firstId = data[0].id ?? data[0].Id;
+          const firstId = data[0].id;
           setActiveSessionId(firstId);
           localStorage.setItem("active_chat_session_id", String(firstId));
         }
@@ -77,16 +88,58 @@ export default function PersistentAIAssistant({
   };
 
   useEffect(() => {
-    loadSessions();
+    let active = true;
+    async function fetchSessions() {
+      try {
+        const data = await getChatSessions();
+        if (active) {
+          setSessions(data || []);
+          setActiveSessionId((prev) => {
+            if (data && data.length > 0 && prev === null) {
+              const firstId = data[0].id;
+              localStorage.setItem("active_chat_session_id", String(firstId));
+              return firstId;
+            }
+            return prev;
+          });
+        }
+      } catch (err) {
+        console.error("Error loading chat sessions:", err);
+      }
+    }
+    fetchSessions();
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
-    if (activeSessionId !== null) {
-      loadMessages(activeSessionId);
-      localStorage.setItem("active_chat_session_id", String(activeSessionId));
-    } else {
-      setMessages([]);
+    const sessionId = activeSessionId;
+    if (sessionId === null || isNaN(sessionId)) return;
+    const validSessionId = sessionId as number;
+
+    let active = true;
+    async function fetchMessages() {
+      setIsLoadingMessages(true);
+      try {
+        const data = await getChatMessages(validSessionId);
+        if (active) {
+          setMessages(data || []);
+          localStorage.setItem(
+            "active_chat_session_id",
+            String(validSessionId),
+          );
+        }
+      } catch (err) {
+        console.error("Error loading messages:", err);
+      } finally {
+        if (active) setIsLoadingMessages(false);
+      }
     }
+    fetchMessages();
+    return () => {
+      active = false;
+    };
   }, [activeSessionId]);
 
   useEffect(() => {
@@ -100,7 +153,7 @@ export default function PersistentAIAssistant({
     try {
       const newSession = await createChatSession(newSessionTitle);
       await loadSessions(false);
-      setActiveSessionId(newSession.id ?? newSession.Id);
+      setActiveSessionId(newSession.id);
       setNewSessionTitle("");
       setShowSessionsDropdown(false);
     } catch (err) {
@@ -116,7 +169,6 @@ export default function PersistentAIAssistant({
 
     let sessionId = activeSessionId;
 
-    // Auto-create a session if none is active
     if (sessionId === null) {
       setIsSending(true);
       try {
@@ -124,8 +176,8 @@ export default function PersistentAIAssistant({
           inputText.trim().substring(0, 24) || "New AI Consulting";
         const newSession = await createChatSession(fallbackTitle);
         await loadSessions(false);
-        sessionId = newSession.id ?? newSession.Id;
-        setActiveSessionId(newSession.id ?? newSession.Id);
+        sessionId = newSession.id;
+        setActiveSessionId(newSession.id);
       } catch (err) {
         console.error("Auto-session creation failed:", err);
       }
@@ -137,7 +189,6 @@ export default function PersistentAIAssistant({
     setInputText("");
     setIsSending(true);
 
-    // Optimistically push User message to the view
     setMessages((prev) => [
       ...prev,
       {
@@ -174,48 +225,52 @@ export default function PersistentAIAssistant({
     "What missing keywords would optimize my resume for ATS?",
   ];
 
-  const activeSession = sessions.find((s) => (s.id ?? s.Id) === activeSessionId);
+  const activeSession = sessions.find(
+    (s) => s.id === activeSessionId,
+  );
 
   if (!isOpen && !floatingMode) return null;
 
   return (
     <aside
-      className={`w-80 border-l border-ascend-border bg-ascend-sidebar flex flex-col h-screen sticky top-0 no-print z-20 shrink-0 ${
+      className={`w-80 bg-white border-l border-gray-200 flex flex-col h-screen sticky top-0 no-print z-20 shrink-0 ${
         floatingMode ? "w-full border-l-0" : ""
       }`}
     >
       {/* Assistant Header */}
-      <div className="p-4 border-b border-ascend-border flex items-center justify-between bg-ascend-sidebar/80 backdrop-blur-md sticky top-0 z-10">
+      <div className="px-4 py-3.5 border-b border-gray-100 flex items-center justify-between sticky top-0 z-10 bg-white">
         <div className="flex items-center gap-2.5 relative">
-          <div className="w-8 h-8 rounded-button bg-ascend-ai/15 border border-ascend-ai/30 flex items-center justify-center text-ascend-ai shadow-[0_0_15px_rgba(124,58,237,0.1)]">
-            <Bot className="w-4.5 h-4.5" />
+          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-[#0052FF] to-[#4D7CFF] flex items-center justify-center shadow-[0_2px_8px_rgba(0,82,255,0.25)]">
+            <Bot className="w-4 h-4 text-white" />
           </div>
           <div>
             <button
               onClick={() => setShowSessionsDropdown(!showSessionsDropdown)}
-              className="text-xs font-semibold text-white flex items-center gap-1 hover:text-ascend-primary transition-colors"
+              className="text-xs font-semibold text-gray-800 flex items-center gap-1 hover:text-[#0052FF] transition-colors"
             >
               <span>
-                {activeSession ? (activeSession.title ?? activeSession.Title) : "AI Career Coach"}
+                {activeSession
+                  ? activeSession.title
+                  : "AI Career Coach"}
               </span>
               <ChevronDown className="w-3.5 h-3.5" />
             </button>
-            <p className="text-[10px] text-ascend-text-secondary flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
+            <p className="text-[10px] text-gray-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
               Context-Aware Assistant
             </p>
           </div>
 
-          {/* Sessions Dropdown Popover */}
+          {/* Sessions Dropdown */}
           {showSessionsDropdown && (
-            <div className="absolute top-10 left-0 w-64 bg-ascend-surface border border-[rgba(255,255,255,0.08)] rounded-button shadow-2xl p-2 z-50 animate-fadeIn">
-              <div className="flex justify-between items-center px-2 py-1 mb-2 border-b border-ascend-border">
-                <span className="text-[10px] font-bold text-ascend-text-secondary uppercase tracking-wider">
+            <div className="absolute top-10 left-0 w-64 bg-white border border-gray-200 rounded-xl shadow-lg p-2 z-50">
+              <div className="flex justify-between items-center px-2 py-1 mb-2 border-b border-gray-100">
+                <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                   Select Session
                 </span>
                 <button
                   onClick={() => setShowSessionsDropdown(false)}
-                  className="p-0.5 text-ascend-text-muted hover:text-white"
+                  className="p-0.5 text-gray-400 hover:text-gray-700 rounded"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -230,12 +285,12 @@ export default function PersistentAIAssistant({
                   placeholder="New session name..."
                   value={newSessionTitle}
                   onChange={(e) => setNewSessionTitle(e.target.value)}
-                  className="flex-1 px-2.5 py-1 text-[11px] bg-black/40 border border-ascend-border rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-ascend-ai transition-colors"
+                  className="flex-1 px-2.5 py-1.5 text-[11px] bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100 transition-colors"
                 />
                 <button
                   type="submit"
                   disabled={isCreatingSession}
-                  className="p-1 bg-ascend-ai hover:bg-[#6D28D9] disabled:opacity-50 text-white rounded-button transition-colors flex items-center justify-center"
+                  className="p-1.5 bg-[#0052FF] hover:bg-[#0040CC] disabled:opacity-50 text-white rounded-lg transition-colors flex items-center justify-center"
                 >
                   {isCreatingSession ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -247,12 +302,12 @@ export default function PersistentAIAssistant({
 
               <div className="max-h-48 overflow-y-auto space-y-0.5">
                 {sessions.length === 0 ? (
-                  <div className="p-3 text-center text-[10px] text-zinc-600">
+                  <div className="p-3 text-center text-[10px] text-gray-400">
                     No sessions. Create one above!
                   </div>
                 ) : (
                   sessions.map((sess) => {
-                    const sessId = sess.id ?? sess.Id;
+                    const sessId = sess.id;
                     return (
                       <button
                         key={sessId}
@@ -262,12 +317,14 @@ export default function PersistentAIAssistant({
                         }}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2 text-[11px] transition-all ${
                           activeSessionId === sessId
-                            ? "bg-ascend-ai/10 text-white border border-ascend-ai/20"
-                            : "hover:bg-white/5 text-ascend-text-secondary hover:text-white border border-transparent"
+                            ? "bg-blue-50 text-blue-600 border border-blue-100"
+                            : "hover:bg-gray-50 text-gray-600 hover:text-gray-800 border border-transparent"
                         }`}
                       >
                         <MessageSquare className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">{sess.title ?? sess.Title}</span>
+                        <span className="truncate">
+                          {sess.title}
+                        </span>
                       </button>
                     );
                   })
@@ -280,7 +337,7 @@ export default function PersistentAIAssistant({
         {floatingMode && onClose && (
           <button
             onClick={onClose}
-            className="p-1.5 text-ascend-text-muted hover:text-white rounded-button hover:bg-white/5 transition-colors"
+            className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -288,35 +345,38 @@ export default function PersistentAIAssistant({
       </div>
 
       {/* Messages Scroll View */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 bg-ascend-bg">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 bg-[#FAFAFA]">
         {isLoadingMessages ? (
           <div className="h-full flex items-center justify-center">
-            <Loader2 className="w-6 h-6 animate-spin text-ascend-ai" />
+            <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
           </div>
         ) : messages.length === 0 && !isSending ? (
           <div className="h-full flex flex-col justify-center items-center text-center p-4 space-y-4">
-            <div className="w-10 h-10 rounded-button bg-ascend-ai/10 border border-ascend-ai/20 flex items-center justify-center text-ascend-ai animate-pulse">
-              <Bot className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-xl bg-linear-to-br from-[#0052FF] to-[#4D7CFF] flex items-center justify-center shadow-[0_4px_14px_rgba(0,82,255,0.3)]">
+              <Sparkles className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-zinc-200">
+              <h4
+                className="text-sm font-bold text-gray-800"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
                 Career Consultant AI
               </h4>
-              <p className="text-[10px] text-ascend-text-muted max-w-[200px] mt-1">
-                Your resume details are loaded. Ask me to rewrite bullet points,
-                mock interview questions, or plan career goals.
+              <p className="text-[10.5px] text-gray-400 max-w-50 mt-1.5 leading-relaxed">
+                Your resume details are loaded. Ask me to rewrite bullets,
+                generate interview questions, or plan your career growth.
               </p>
             </div>
 
-            <div className="w-full space-y-1.5 pt-4 text-left">
-              <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest px-1 block mb-1">
+            <div className="w-full space-y-1.5 pt-2 text-left">
+              <span className="section-label px-1 block mb-2">
                 Suggested Actions
               </span>
               {quickPrompts.map((prompt, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleQuickPromptClick(prompt)}
-                  className="w-full text-left p-2.5 rounded-xl border border-ascend-border bg-ascend-surface/40 hover:bg-ascend-surface text-[10px] text-ascend-text-secondary hover:text-white transition-all duration-200"
+                  className="w-full text-left p-2.5 rounded-xl border border-gray-200 bg-white hover:border-blue-200 hover:bg-blue-50/50 text-[10.5px] text-gray-600 hover:text-blue-700 transition-all duration-150 shadow-xs"
                 >
                   {prompt}
                 </button>
@@ -326,12 +386,11 @@ export default function PersistentAIAssistant({
         ) : (
           <>
             {messages.map((msg, idx) => {
-              const role = msg.role ?? msg.Role;
               const isAssistant =
-                role === "Assistant" ||
-                role === "assistant" ||
-                role === "System" ||
-                role === "system";
+                msg.role === "Assistant" ||
+                msg.role === "assistant" ||
+                msg.role === "System" ||
+                msg.role === "system";
               const messageId = `msg-${idx}`;
 
               return (
@@ -344,39 +403,44 @@ export default function PersistentAIAssistant({
                   <div
                     className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border ${
                       isAssistant
-                        ? "bg-ascend-ai/10 border-ascend-ai/20 text-ascend-ai"
-                        : "bg-zinc-800 border-zinc-700 text-white"
+                        ? "bg-blue-50 border-blue-100 text-blue-600"
+                        : "bg-[#0052FF] border-[#0040CC] text-white"
                     }`}
                   >
                     {isAssistant ? (
-                      <Sparkles className="w-3.5 h-3.5" />
+                      <Sparkles className="w-3 h-3" />
                     ) : (
-                      <User className="w-3.5 h-3.5" />
+                      <User className="w-3 h-3" />
                     )}
                   </div>
 
                   <div className="space-y-1 overflow-hidden">
                     <div
-                      className={`px-3 py-2 rounded-card text-[11px] leading-relaxed group relative ${
+                      className={`px-3 py-2 text-[11px] leading-relaxed group relative ${
                         isAssistant
-                          ? "bg-ascend-surface border border-ascend-border text-white rounded-tl-sm"
-                          : "bg-gradient-to-r from-ascend-primary to-ascend-ai text-black font-medium rounded-tr-sm"
+                          ? "bg-white border border-gray-200 text-gray-700 rounded-xl rounded-tl-sm shadow-xs"
+                          : "bg-[#0052FF] text-white font-medium rounded-xl rounded-tr-sm"
                       }`}
                     >
-                      <p className="whitespace-pre-wrap select-text break-words">
-                        {msg.content ?? msg.Content}
+                      <p className="whitespace-pre-wrap select-text-wrap-break-words">
+                        {msg.content}
                       </p>
 
                       {isAssistant && (
                         <button
-                          onClick={() => handleCopyText(msg.content ?? msg.Content, messageId)}
-                          className="absolute right-2 top-2 p-1 bg-black/40 hover:bg-black/80 rounded border border-ascend-border opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() =>
+                            handleCopyText(
+                              msg.content,
+                              messageId,
+                            )
+                          }
+                          className="absolute right-2 top-2 p-1 bg-gray-100 hover:bg-gray-200 rounded border border-gray-200 opacity-0 group-hover:opacity-100 transition-opacity"
                           title="Copy message"
                         >
                           {copiedId === messageId ? (
-                            <Check className="w-3 h-3 text-emerald-400" />
+                            <Check className="w-3 h-3 text-emerald-500" />
                           ) : (
-                            <Copy className="w-3 h-3 text-ascend-text-secondary" />
+                            <Copy className="w-3 h-3 text-gray-400" />
                           )}
                         </button>
                       )}
@@ -387,10 +451,10 @@ export default function PersistentAIAssistant({
             })}
             {isSending && (
               <div className="flex gap-2.5 max-w-[80%] mr-auto">
-                <div className="w-6 h-6 rounded-button bg-ascend-ai/10 border border-ascend-ai/20 flex items-center justify-center text-ascend-ai shrink-0">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <div className="w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-500 shrink-0">
+                  <Loader2 className="w-3 h-3 animate-spin" />
                 </div>
-                <div className="px-3.5 py-2.5 rounded-card bg-ascend-surface border border-ascend-border text-ascend-text-muted text-[10px] rounded-tl-sm">
+                <div className="px-3.5 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-400 text-[10px] rounded-tl-sm shadow-xs">
                   Coaching assistant is typing...
                 </div>
               </div>
@@ -400,15 +464,14 @@ export default function PersistentAIAssistant({
         )}
       </div>
 
-      {/* Cursor-like Input Box */}
-      <div className="p-4 border-t border-ascend-border bg-ascend-sidebar sticky bottom-0">
+      {/* Input Box */}
+      <div className="p-3 border-t border-gray-100 bg-white sticky bottom-0">
         <form
           onSubmit={handleSendMessage}
-          className="relative rounded-button border border-[rgba(255,255,255,0.08)] bg-ascend-surface overflow-hidden focus-within:border-ascend-ai/50 transition-all focus-within:shadow-floating"
+          className="relative rounded-xl border border-gray-200 bg-gray-50 overflow-hidden focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all"
         >
-          {/* Active Context Chips */}
           <div className="flex items-center gap-1.5 px-3 pt-2">
-            <span className="px-2 py-0.5 rounded bg-ascend-ai/15 border border-ascend-ai/20 text-[9px] font-bold text-white flex items-center gap-1 select-none">
+            <span className="px-2 py-0.5 rounded-md bg-blue-50 border border-blue-100 text-[9px] font-semibold text-blue-600 flex items-center gap-1 select-none">
               <Command className="w-2.5 h-2.5" />
               <span>@workspace</span>
             </span>
@@ -426,11 +489,11 @@ export default function PersistentAIAssistant({
               }
             }}
             disabled={isSending}
-            className="w-full px-3 py-2 bg-transparent text-[11px] text-white placeholder-zinc-500 focus:outline-none resize-none font-sans"
+            className="w-full px-3 py-2 bg-transparent text-[11px] text-gray-800 placeholder-gray-400 focus:outline-none resize-none font-sans"
           />
 
-          <div className="flex items-center justify-between px-3 pb-2 border-t border-ascend-border pt-1.5 bg-black/10">
-            <span className="text-[8.5px] text-ascend-text-muted flex items-center gap-1">
+          <div className="flex items-center justify-between px-3 pb-2 border-t border-gray-100 pt-1.5">
+            <span className="text-[8.5px] text-gray-400 flex items-center gap-1">
               <CornerDownLeft className="w-2.5 h-2.5" />
               <span>Enter to send</span>
             </span>
@@ -438,7 +501,7 @@ export default function PersistentAIAssistant({
             <button
               type="submit"
               disabled={!inputText.trim() || isSending}
-              className="p-1.5 bg-ascend-ai hover:bg-[#6D28D9] disabled:bg-zinc-800 disabled:opacity-40 text-white rounded-button transition-all flex items-center justify-center shadow-lg"
+              className="p-1.5 bg-[#0052FF] hover:bg-[#0040CC] disabled:bg-gray-200 disabled:opacity-60 text-white rounded-lg transition-all flex items-center justify-center shadow-sm"
             >
               <Send className="w-3.5 h-3.5" />
             </button>
