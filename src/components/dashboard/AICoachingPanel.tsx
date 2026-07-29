@@ -33,7 +33,7 @@ export default function AICoachingPanel() {
       const data = await getChatSessions();
       setSessions(data || []);
       if (data && data.length > 0 && activeSessionId === null) {
-        setActiveSessionId(data[0].Id);
+        setActiveSessionId(data[0].id ?? data[0].Id);
       }
     } catch (err) {
       console.error(err);
@@ -73,7 +73,7 @@ export default function AICoachingPanel() {
     try {
       const newSession = await createChatSession(newSessionTitle);
       await loadSessions();
-      setActiveSessionId(newSession.Id);
+      setActiveSessionId(newSession.id ?? newSession.Id);
       setNewSessionTitle("");
     } catch (err) {
       console.error(err);
@@ -94,9 +94,9 @@ export default function AICoachingPanel() {
     setMessages((prev) => [
       ...prev,
       {
-        Role: "User",
-        Content: userMsgText,
-        CreatedOn: new Date().toISOString(),
+        role: "user",
+        content: userMsgText,
+        createdOn: new Date().toISOString(),
       },
     ]);
 
@@ -118,8 +118,8 @@ export default function AICoachingPanel() {
       try {
         const newSession = await createChatSession("Quick AI Consultation");
         setSessions((prev) => [newSession, ...prev]);
-        currentSessionId = newSession.Id;
-        setActiveSessionId(newSession.Id);
+        currentSessionId = newSession.id ?? newSession.Id;
+        setActiveSessionId(newSession.id ?? newSession.Id);
       } catch (err) {
         console.error(err);
         setIsCreatingSession(false);
@@ -174,22 +174,25 @@ export default function AICoachingPanel() {
               No sessions created yet. Type a title above to begin.
             </div>
           ) : (
-            sessions.map((sess) => (
-              <button
-                key={sess.Id}
-                onClick={() => setActiveSessionId(sess.Id)}
-                className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-all ${
-                  activeSessionId === sess.Id
-                    ? "bg-amber-600/10 border border-amber-500/20 text-amber-500"
-                    : "hover:bg-zinc-900/50 border border-transparent text-zinc-400 hover:text-zinc-200"
-                }`}
-              >
-                <MessageSquare className="w-4 h-4 shrink-0" />
-                <span className="text-xs font-medium truncate">
-                  {sess.Title}
-                </span>
-              </button>
-            ))
+            sessions.map((sess) => {
+              const sessId = sess.id ?? sess.Id;
+              return (
+                <button
+                  key={sessId}
+                  onClick={() => setActiveSessionId(sessId)}
+                  className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-all ${
+                    activeSessionId === sessId
+                      ? "bg-amber-600/10 border border-amber-500/20 text-amber-500"
+                      : "hover:bg-zinc-900/50 border border-transparent text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  <MessageSquare className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-medium truncate">
+                    {sess.title ?? sess.Title}
+                  </span>
+                </button>
+              );
+            })
           )}
         </div>
       </div>
@@ -255,10 +258,12 @@ export default function AICoachingPanel() {
                 </div>
               ) : (
                 messages.map((msg, idx) => {
+                  const role = msg.role ?? msg.Role;
                   const isAssistant =
-                    msg.Role === "Assistant" ||
-                    msg.Role === "assistant" ||
-                    msg.Role === "System";
+                    role === "Assistant" ||
+                    role === "assistant" ||
+                    role === "System" ||
+                    role === "system";
                   return (
                     <div
                       key={idx}
@@ -287,7 +292,7 @@ export default function AICoachingPanel() {
                             : "bg-amber-600 text-white"
                         }`}
                       >
-                        <p className="whitespace-pre-wrap">{msg.Content}</p>
+                        <p className="whitespace-pre-wrap">{msg.content ?? msg.Content}</p>
                       </div>
                     </div>
                   );

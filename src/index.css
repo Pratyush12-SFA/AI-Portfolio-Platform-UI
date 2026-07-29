@@ -1,13 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
+:root {
+  /* Brand Theme Colors - Dark Defaults (Luxury Modern Dark) */
+  --color-ascend-bg: #0B0B0F;
+  --color-ascend-surface: #14141A;
+  --color-ascend-surface-elevated: #1B1B24;
+  --color-ascend-sidebar: #101014;
+  --color-ascend-border: rgba(255, 255, 255, 0.08);
+  --color-ascend-primary: #F5B301;
+  --color-ascend-ai: #7C3AED;
+  --color-ascend-info: #3B82F6;
+  --color-ascend-success: #22C55E;
+  --color-ascend-warning: #F59E0B;
+  --color-ascend-danger: #EF4444;
+  
+  /* Text Color Variables */
+  --color-ascend-text-primary: #FFFFFF;
+  --color-ascend-text-secondary: #A1A1AA;
+  --color-ascend-text-muted: #71717A;
+  --color-ascend-text-disabled: #52525B;
+  
+  /* Spacing Variables - 8px scale */
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 32px;
+  --spacing-3xl: 40px;
+  --spacing-4xl: 48px;
+  --spacing-5xl: 64px;
+  --spacing-6xl: 80px;
+  --spacing-7xl: 96px;
+  --spacing-8xl: 128px;
+  
+  /* Typography Scale */
+  --font-sans: "Geist", "Inter", -apple-system, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Fira Code", monospace;
+  
+  /* Border Radius scale */
+  --radius-button: 12px;
+  --radius-input: 14px;
+  --radius-card: 20px;
+  --radius-drawer: 24px;
+  --radius-dialog: 24px;
+  --radius-panel: 28px;
+  
+  /* Shadow Elevation scale */
+  --shadow-surface: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 4px 12px -2px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-floating: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 2px 1px rgba(255, 255, 255, 0.05);
+
+  color-scheme: dark;
+}
+
+/* Future Light Theme Support mapping selector */
+.light-mode {
+  --color-ascend-bg: #F9F9FB;
+  --color-ascend-surface: #FFFFFF;
+  --color-ascend-surface-elevated: #F3F4F6;
+  --color-ascend-sidebar: #F9FAFB;
+  --color-ascend-border: rgba(0, 0, 0, 0.06);
+  --color-ascend-primary: #D99B00;
+  --color-ascend-ai: #6D28D9;
+  --color-ascend-info: #2563EB;
+  --color-ascend-success: #16A34A;
+  --color-ascend-warning: #D97706;
+  --color-ascend-danger: #DC2626;
+  
+  --color-ascend-text-primary: #111827;
+  --color-ascend-text-secondary: #4B5563;
+  --color-ascend-text-muted: #9CA3AF;
+  --color-ascend-text-disabled: #D1D5DB;
+
+  color-scheme: light;
+}
+
+/* Tailwind v4 Config Mapping Directive */
+@theme {
+  --color-ascend-bg: var(--color-ascend-bg);
+  --color-ascend-surface: var(--color-ascend-surface);
+  --color-ascend-surface-elevated: var(--color-ascend-surface-elevated);
+  --color-ascend-sidebar: var(--color-ascend-sidebar);
+  --color-ascend-border: var(--color-ascend-border);
+  --color-ascend-primary: var(--color-ascend-primary);
+  --color-ascend-ai: var(--color-ascend-ai);
+  --color-ascend-info: var(--color-ascend-info);
+  --color-ascend-success: var(--color-ascend-success);
+  --color-ascend-warning: var(--color-ascend-warning);
+  --color-ascend-danger: var(--color-ascend-danger);
+
+  --color-ascend-text-primary: var(--color-ascend-text-primary);
+  --color-ascend-text-secondary: var(--color-ascend-text-secondary);
+  --color-ascend-text-muted: var(--color-ascend-text-muted);
+  --color-ascend-text-disabled: var(--color-ascend-text-disabled);
+  
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  
+  --radius-button: var(--radius-button);
+  --radius-input: var(--radius-input);
+  --radius-card: var(--radius-card);
+  --radius-drawer: var(--radius-drawer);
+  --radius-dialog: var(--radius-dialog);
+  --radius-panel: var(--radius-panel);
+  
+  --shadow-surface: var(--shadow-surface);
+  --shadow-card: var(--shadow-card);
+  --shadow-floating: var(--shadow-floating);
+}
+
+/* Global resets and layouts */
 html,
 body,
 #root {
   width: 100%;
   min-height: 100vh;
   margin: 0;
+  background-color: var(--color-ascend-bg);
+  color: var(--color-ascend-text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
 }
 
-body {
-  background: #0b0b0f;
+/* Custom Scrollbars in index.css */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ascend-primary);
+}
+
+/* a11y Focus Outline Styles */
+.focus-ring-ascend:focus-visible {
+  outline: 2px solid var(--color-ascend-primary);
+  outline-offset: 2px;
+}
+
+/* Accessibility Reduced Motion Overrides */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
