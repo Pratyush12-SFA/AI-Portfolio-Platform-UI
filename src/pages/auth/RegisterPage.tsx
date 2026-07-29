@@ -10,10 +10,10 @@ export default function RegisterPage() {
         );
     }
     return (
-        <div className="min-h-screen bg-black text-white">
-            <div className="grid min-h-screen lg:grid-cols-2">
+        <div className="min-h-screen bg-white">
+            <div className="grid min-h-screen lg:grid-cols-[55%_45%]">
                 <HeroSection />
-                <div className="flex items-center justify-center p-8">
+                <div className="flex items-center justify-center p-8 lg:p-16 bg-white">
                     <RegisterForm />
                 </div>
             </div>

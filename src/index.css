@@ -1,27 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 :root {
-  /* Brand Theme Colors - Dark Defaults (Luxury Modern Dark) */
-  --color-ascend-bg: #0B0B0F;
-  --color-ascend-surface: #14141A;
-  --color-ascend-surface-elevated: #1B1B24;
-  --color-ascend-sidebar: #101014;
-  --color-ascend-border: rgba(255, 255, 255, 0.08);
-  --color-ascend-primary: #F5B301;
-  --color-ascend-ai: #7C3AED;
-  --color-ascend-info: #3B82F6;
-  --color-ascend-success: #22C55E;
-  --color-ascend-warning: #F59E0B;
-  --color-ascend-danger: #EF4444;
-  
-  /* Text Color Variables */
-  --color-ascend-text-primary: #FFFFFF;
-  --color-ascend-text-secondary: #A1A1AA;
-  --color-ascend-text-muted: #71717A;
-  --color-ascend-text-disabled: #52525B;
-  
-  /* Spacing Variables - 8px scale */
+  /* ─── Palette ─── */
+  --color-ascend-bg: #FAFAFA;
+  --color-ascend-surface: #FFFFFF;
+  --color-ascend-surface-elevated: #F0F5FF;
+  --color-ascend-sidebar: #FFFFFF;
+  --color-ascend-border: #E5E7EB;
+  --color-ascend-border-subtle: #F3F4F6;
+
+  /* Electric Blue identity */
+  --color-ascend-primary: #0052FF;
+  --color-ascend-primary-hover: #0040CC;
+  --color-ascend-primary-light: #EEF3FF;
+  --color-ascend-primary-mid: #4D7CFF;
+
+  /* Semantic */
+  --color-ascend-ai: #0284C7;
+  --color-ascend-info: #0052FF;
+  --color-ascend-success: #059669;
+  --color-ascend-success-light: #ECFDF5;
+  --color-ascend-warning: #D97706;
+  --color-ascend-warning-light: #FFFBEB;
+  --color-ascend-danger: #DC2626;
+  --color-ascend-danger-light: #FEF2F2;
+
+  /* ─── Text ─── */
+  --color-ascend-text-primary: #0A0F1E;
+  --color-ascend-text-secondary: #374151;
+  --color-ascend-text-muted: #6B7280;
+  --color-ascend-text-disabled: #D1D5DB;
+
+  /* ─── Spacing — 8px scale ─── */
   --spacing-xxs: 4px;
   --spacing-xs: 8px;
   --spacing-sm: 12px;
@@ -35,84 +46,92 @@
   --spacing-6xl: 80px;
   --spacing-7xl: 96px;
   --spacing-8xl: 128px;
-  
-  /* Typography Scale */
-  --font-sans: "Geist", "Inter", -apple-system, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Fira Code", monospace;
-  
-  /* Border Radius scale */
-  --radius-button: 12px;
-  --radius-input: 14px;
-  --radius-card: 20px;
-  --radius-drawer: 24px;
-  --radius-dialog: 24px;
-  --radius-panel: 28px;
-  
-  /* Shadow Elevation scale */
-  --shadow-surface: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --shadow-card: 0 4px 12px -2px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-  --shadow-floating: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 2px 1px rgba(255, 255, 255, 0.05);
 
-  color-scheme: dark;
-}
+  /* ─── Typography ─── */
+  --font-display: "Calistoga", Georgia, serif;
+  --font-sans: "Inter", -apple-system, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
 
-/* Future Light Theme Support mapping selector */
-.light-mode {
-  --color-ascend-bg: #F9F9FB;
-  --color-ascend-surface: #FFFFFF;
-  --color-ascend-surface-elevated: #F3F4F6;
-  --color-ascend-sidebar: #F9FAFB;
-  --color-ascend-border: rgba(0, 0, 0, 0.06);
-  --color-ascend-primary: #D99B00;
-  --color-ascend-ai: #6D28D9;
-  --color-ascend-info: #2563EB;
-  --color-ascend-success: #16A34A;
-  --color-ascend-warning: #D97706;
-  --color-ascend-danger: #DC2626;
-  
-  --color-ascend-text-primary: #111827;
-  --color-ascend-text-secondary: #4B5563;
-  --color-ascend-text-muted: #9CA3AF;
-  --color-ascend-text-disabled: #D1D5DB;
+  /* ─── Radii ─── */
+  --radius-button: 8px;
+  --radius-input: 10px;
+  --radius-card: 12px;
+  --radius-drawer: 16px;
+  --radius-dialog: 16px;
+  --radius-panel: 16px;
+  --radius-pill: 999px;
+
+  /* ─── Shadows — layered card system ─── */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.07), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 12px 28px -6px rgba(0, 0, 0, 0.10), 0 4px 10px -4px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 24px 48px -12px rgba(0, 0, 0, 0.14), 0 8px 16px -8px rgba(0, 0, 0, 0.08);
+
+  /* Blue-tinted shadow for focus/active states */
+  --shadow-blue-sm: 0 0 0 3px rgba(0, 82, 255, 0.12);
+  --shadow-blue-md: 0 4px 20px rgba(0, 82, 255, 0.15), 0 0 0 1px rgba(0, 82, 255, 0.08);
+  --shadow-blue-lg: 0 12px 32px rgba(0, 82, 255, 0.18);
+
+  /* Aliases for legacy compat */
+  --shadow-surface: var(--shadow-xs);
+  --shadow-card: var(--shadow-sm);
+  --shadow-floating: var(--shadow-xl);
 
   color-scheme: light;
 }
 
-/* Tailwind v4 Config Mapping Directive */
+/* ─── Tailwind v4 theme mapping ─── */
 @theme {
   --color-ascend-bg: var(--color-ascend-bg);
   --color-ascend-surface: var(--color-ascend-surface);
   --color-ascend-surface-elevated: var(--color-ascend-surface-elevated);
   --color-ascend-sidebar: var(--color-ascend-sidebar);
   --color-ascend-border: var(--color-ascend-border);
+  --color-ascend-border-subtle: var(--color-ascend-border-subtle);
   --color-ascend-primary: var(--color-ascend-primary);
+  --color-ascend-primary-hover: var(--color-ascend-primary-hover);
+  --color-ascend-primary-light: var(--color-ascend-primary-light);
+  --color-ascend-primary-mid: var(--color-ascend-primary-mid);
   --color-ascend-ai: var(--color-ascend-ai);
   --color-ascend-info: var(--color-ascend-info);
   --color-ascend-success: var(--color-ascend-success);
+  --color-ascend-success-light: var(--color-ascend-success-light);
   --color-ascend-warning: var(--color-ascend-warning);
+  --color-ascend-warning-light: var(--color-ascend-warning-light);
   --color-ascend-danger: var(--color-ascend-danger);
-
+  --color-ascend-danger-light: var(--color-ascend-danger-light);
   --color-ascend-text-primary: var(--color-ascend-text-primary);
   --color-ascend-text-secondary: var(--color-ascend-text-secondary);
   --color-ascend-text-muted: var(--color-ascend-text-muted);
   --color-ascend-text-disabled: var(--color-ascend-text-disabled);
-  
+
+  --font-display: var(--font-display);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
-  
+
   --radius-button: var(--radius-button);
   --radius-input: var(--radius-input);
   --radius-card: var(--radius-card);
   --radius-drawer: var(--radius-drawer);
   --radius-dialog: var(--radius-dialog);
   --radius-panel: var(--radius-panel);
-  
+  --radius-pill: var(--radius-pill);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
   --shadow-surface: var(--shadow-surface);
   --shadow-card: var(--shadow-card);
   --shadow-floating: var(--shadow-floating);
+  --shadow-blue-sm: var(--shadow-blue-sm);
+  --shadow-blue-md: var(--shadow-blue-md);
+  --shadow-blue-lg: var(--shadow-blue-lg);
 }
 
-/* Global resets and layouts */
+/* ─── Global resets ─── */
 html,
 body,
 #root {
@@ -122,33 +141,238 @@ body,
   background-color: var(--color-ascend-bg);
   color: var(--color-ascend-text-primary);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* Custom Scrollbars in index.css */
+/* ─── Micro-interaction baseline ─── */
+button,
+a,
+input,
+textarea,
+select {
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0.5px) scale(0.985);
+}
+
+/* ─── Surface system (replaces glassmorphism) ─── */
+
+/* Standard white card */
+.surface-card {
+  background: var(--color-ascend-surface);
+  border: 1px solid var(--color-ascend-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.surface-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #D1D5DB;
+}
+
+/* Elevated blue-tinted panel */
+.surface-panel {
+  background: var(--color-ascend-surface);
+  border: 1px solid var(--color-ascend-border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-md);
+}
+
+/* Sidebar surface */
+.surface-sidebar {
+  background: var(--color-ascend-sidebar);
+  border-right: 1px solid var(--color-ascend-border);
+  box-shadow: var(--shadow-xs);
+}
+
+/* AI blue-accent card */
+.surface-ai {
+  background: linear-gradient(135deg, #EEF3FF 0%, #F8FAFF 100%);
+  border: 1px solid rgba(0, 82, 255, 0.12);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(0, 82, 255, 0.04);
+}
+
+/* ─── Typography utilities ─── */
+
+/* Calistoga display gradient text */
+.gradient-text-blue {
+  background: linear-gradient(135deg, #0052FF 0%, #4D7CFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Uppercase section micro-label */
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ascend-text-muted);
+}
+
+/* ─── Badge utilities ─── */
+.badge-blue {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--color-ascend-primary-light);
+  color: var(--color-ascend-primary);
+  border: 1px solid rgba(0, 82, 255, 0.2);
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.badge-success {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--color-ascend-success-light);
+  color: var(--color-ascend-success);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.badge-warning {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--color-ascend-warning-light);
+  color: var(--color-ascend-warning);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* ─── Button primitives ─── */
+
+/* Primary Electric Blue CTA */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #0052FF 0%, #1a6aff 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-button);
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 82, 255, 0.25);
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0040CC 0%, #0052FF 100%);
+  box-shadow: 0 4px 16px rgba(0, 82, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Ghost bordered secondary */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: #ffffff;
+  color: var(--color-ascend-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-button);
+  border: 1px solid var(--color-ascend-border);
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  border-color: #C7D2FE;
+  color: var(--color-ascend-primary);
+  background: var(--color-ascend-primary-light);
+  transform: translateY(-1px);
+}
+
+/* ─── Input focus system ─── */
+.input-light {
+  background: #F9FAFB;
+  border: 1px solid var(--color-ascend-border);
+  border-radius: var(--radius-input);
+  color: var(--color-ascend-text-primary);
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.input-light::placeholder {
+  color: var(--color-ascend-text-disabled);
+}
+
+.input-light:focus {
+  border-color: var(--color-ascend-primary);
+  box-shadow: var(--shadow-blue-sm);
+  background: #ffffff;
+}
+
+/* ─── Subtle dot-grid background for workspace ─── */
+.workspace-grid {
+  position: relative;
+}
+
+.workspace-grid::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #D1D5DB 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.35;
+  z-index: 0;
+}
+
+/* ─── Scrollbar — light theme ─── */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
+
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.01);
-  border-radius: 9999px;
+  background: #F1F5F9;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 9999px;
+  background: #CBD5E1;
+  border-radius: 999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-ascend-primary);
 }
 
-/* a11y Focus Outline Styles */
+/* ─── Focus ring — Electric Blue ─── */
 .focus-ring-ascend:focus-visible {
   outline: 2px solid var(--color-ascend-primary);
   outline-offset: 2px;
 }
 
-/* Accessibility Reduced Motion Overrides */
+/* ─── Accessibility — reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -156,4 +380,18 @@ body,
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ─── Custom keyframes and slide animations ─── */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

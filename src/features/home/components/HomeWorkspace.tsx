@@ -1,26 +1,22 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Sparkles,
-  Eye,
   Send,
   Bot,
   ArrowRight,
-  TrendingUp,
   FileCheck2,
-  Calendar,
-  AlertTriangle,
-  Lightbulb,
-  Zap,
+  CheckCircle2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface HomeWorkspaceProps {
   profile: any;
-  setActiveTab: (tab: string) => void;
-  resumeData?: any;
+  projects?: any[];
+  skills?: any[];
+  experiences?: any[];
 }
 
-// Custom Counter Hook / Component inline for Animated Numbers
 function AnimatedCounter({
   value,
   suffix = "",
@@ -33,7 +29,7 @@ function AnimatedCounter({
   useEffect(() => {
     let start = 0;
     if (value === 0) return;
-    const duration = 800; // ms
+    const duration = 800;
     const stepTime = Math.max(Math.floor(duration / value), 15);
 
     const timer = setInterval(() => {
@@ -59,16 +55,16 @@ function AnimatedCounter({
 
 export default function HomeWorkspace({
   profile,
-  setActiveTab,
 }: HomeWorkspaceProps) {
-  const userName = profile?.FullName || "Pratyush";
+  const navigate = useNavigate();
+  const userName = profile?.FullName?.split(" ")[0] || "Pratyush";
+  const [miniChatInput, setMiniChatInput] = useState("");
 
-  // Dynamic Greeting based on time
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 18) return "Good Afternoon";
-    return "Good Evening";
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
   };
 
   const metrics = [
@@ -76,79 +72,42 @@ export default function HomeWorkspace({
       label: "Resume ATS Score",
       value: 88,
       suffix: "%",
-      desc: "ATS verified",
-      color: "from-[#FFE885]/10 to-[#F5B301]/10",
+      desc: "ATS verified · top 12%",
       icon: Sparkles,
-      iconColor: "text-[#F5B301]",
-      tab: "resume",
+      iconStyle: "bg-blue-50 text-blue-600 border border-blue-100",
+      tab: "/dashboard/resume",
+      trend: "+4%",
     },
     {
-      label: "Portfolio Views",
-      value: 1248,
-      suffix: "",
+      label: "Application Success",
+      value: 74,
+      suffix: "%",
       desc: "+12% this week",
-      color: "from-blue-500/10 to-cyan-500/10",
-      icon: Eye,
-      iconColor: "text-blue-400",
-      tab: "portfolio",
-    },
-    {
-      label: "Jobs Tracking",
-      value: 24,
-      suffix: "",
-      desc: "3 matches found",
-      color: "from-emerald-500/10 to-teal-500/10",
       icon: Send,
-      iconColor: "text-emerald-400",
-      tab: "jobs",
+      iconStyle:
+        "bg-[#EEF3FF] text-[#0052FF] border border-[rgba(0,82,255,0.15)]",
+      tab: "/dashboard/jobs",
+      trend: "+12%",
     },
     {
-      label: "AI Coach Credits",
-      value: 85,
-      suffix: "/100",
-      desc: "Refreshes in 4 days",
-      color: "from-purple-500/10 to-pink-500/10",
-      icon: Bot,
-      iconColor: "text-purple-400",
-      tab: "ai-assistant",
-    },
-  ];
-
-  const quickActions = [
-    {
-      title: "Improve Resume",
-      desc: "Optimize summary & rewrite experience bullets",
+      label: "Skills Coverage",
+      value: 82,
+      suffix: "%",
+      desc: "18 / 22 core skills matched",
       icon: FileCheck2,
-      tab: "resume",
-      actionText: "Open Builder",
-      color:
-        "border-[#F5B301]/25 hover:border-[#F5B301]/80 hover:bg-[#F5B301]/5",
+      iconStyle: "bg-emerald-50 text-emerald-600 border border-emerald-100",
+      tab: "/dashboard/resume",
+      trend: "+6%",
     },
     {
-      title: "Select Portfolio Theme",
-      desc: "Publish your personal site in a new theme",
-      icon: Eye,
-      tab: "portfolio",
-      actionText: "View Themes",
-      color: "border-blue-500/25 hover:border-blue-500/80 hover:bg-blue-500/5",
-    },
-    {
-      title: "Scan Job Description",
-      desc: "Check ATS match keywords & cover letter",
-      icon: TrendingUp,
-      tab: "jobs",
-      actionText: "Analyze JD",
-      color:
-        "border-emerald-500/25 hover:border-emerald-500/80 hover:bg-emerald-500/5",
-    },
-    {
-      title: "Consult AI Coach",
-      desc: "Prep for interview questions & skills analysis",
+      label: "AI Confidence Score",
+      value: 91,
+      suffix: "%",
+      desc: "High fit recommendation",
       icon: Bot,
-      tab: "ai-assistant",
-      actionText: "Chat Now",
-      color:
-        "border-purple-500/25 hover:border-purple-500/80 hover:bg-purple-500/5",
+      iconStyle: "bg-sky-50 text-sky-600 border border-sky-100",
+      tab: "/dashboard/ai-assistant",
+      trend: "+3%",
     },
   ];
 
@@ -158,254 +117,333 @@ export default function HomeWorkspace({
       time: "2 hours ago",
       desc: "Rewrote Google experience description focusing on metrics and business outcomes.",
       icon: Sparkles,
-      iconBg: "bg-purple-500/10 border border-purple-500/30 text-purple-400",
+      iconStyle: "bg-blue-50 border border-blue-100 text-blue-600",
     },
     {
       title: "Portfolio Domain Configured",
       time: "Yesterday",
       desc: "Successfully mapped custom slug 'pratyush-software' to public URL.",
-      icon: Eye,
-      iconBg: "bg-blue-500/10 border border-blue-500/30 text-blue-400",
+      icon: CheckCircle2,
+      iconStyle: "bg-emerald-50 border border-emerald-100 text-emerald-600",
     },
     {
       title: "Job Fit Check: Senior Frontend Architect",
       time: "3 days ago",
       desc: "Ran match scanner for Netflix JD. Score: 82% match with 4 suggested keywords.",
       icon: FileCheck2,
-      iconBg: "bg-[#F5B301]/10 border border-[#F5B301]/30 text-[#F5B301]",
+      iconStyle: "bg-sky-50 border border-sky-100 text-sky-600",
     },
   ];
 
-  const suggestions = [
+  const mockProjects = [
     {
-      title: "High-priority keyword mismatch",
-      desc: "Your resume is missing 'React 19 Server Components'. This is required in 3 bookmarked jobs.",
-      type: "warning",
-      action: "Optimize Skills",
-      icon: AlertTriangle,
-      iconColor: "text-amber-400",
-      tab: "resume",
+      name: "AI Portfolio Platform",
+      role: "Lead Frontend Architect",
+      status: "Published",
+      progress: 95,
+      score: "92% ATS",
+      tech: ["React 19", "Vite", "Tailwind v4"],
     },
     {
-      title: "Unpublished changes",
-      desc: "You updated your experience timeline, but the portfolio theme is not synced. Publish now.",
-      type: "idea",
-      action: "Publish Themes",
-      icon: Lightbulb,
-      iconColor: "text-blue-400",
-      tab: "portfolio",
+      name: "Talent Development Portal",
+      role: "Senior Systems Engineer",
+      status: "In Progress",
+      progress: 68,
+      score: "85% ATS",
+      tech: ["C# .NET", "PostgreSQL", "Zustand"],
     },
   ];
 
   return (
-    <div className="space-y-8 pb-12 select-none">
-      {/* Header Greeting */}
-      <div className="space-y-2">
-        <h1 className="text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
-          <span>
-            {getGreeting()}, {userName}
-          </span>
-          <span className="animate-pulse">👋</span>
+    <div className="space-y-8 pb-12 max-w-4xl mx-auto select-none">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="space-y-1.5"
+      >
+        <h1
+          className="text-4xl font-bold tracking-tight text-gray-900 flex items-center gap-3"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          {getGreeting()}, {userName}
+          <span>👋</span>
         </h1>
-        <p className="text-sm text-ascend-text-secondary font-light max-w-xl leading-relaxed">
-          Welcome to your Ascend Career Operating System. Let's build something
-          extraordinary for your career today.
+        <p className="text-sm text-gray-500 font-normal leading-relaxed">
+          Welcome to your Ascend Career Dashboard. Here is your linear progress
+          timeline and suggestions for today.
         </p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+        className="p-5 surface-card relative overflow-hidden group"
+      >
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+          <div className="space-y-1">
+            <span className="section-label">Today&apos;s Goal</span>
+            <h3 className="text-lg font-bold text-gray-900">
+              Complete your profile
+            </h3>
+            <p className="text-xs text-gray-500">
+              Add key projects and optimize your custom domain details.
+            </p>
+          </div>
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="text-right sm:block hidden">
+              <span className="text-2xl font-bold text-[#0052FF]">82%</span>
+              <span className="text-[10px] text-gray-400 block font-semibold">
+                COMPLETED
+              </span>
+            </div>
+            <div className="w-16 h-16 rounded-full border-4 border-gray-100 flex items-center justify-center relative bg-gray-50 shrink-0">
+              <span className="text-sm font-bold text-gray-800">82%</span>
+              <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="28"
+                  className="stroke-[#0052FF] fill-none"
+                  strokeWidth="4"
+                  strokeDasharray={2 * Math.PI * 28}
+                  strokeDashoffset={2 * Math.PI * 28 * (1 - 0.82)}
+                />
+              </svg>
+            </div>
+            <button
+              onClick={() => navigate("/dashboard/resume")}
+              className="btn-primary py-2 px-4 rounded-lg text-xs"
+            >
+              Finish Profile
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+        className="p-5 bg-blue-50 border border-blue-100 rounded-xl flex gap-4"
+      >
+        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 shrink-0 h-10 w-10 flex items-center justify-center">
+          <Sparkles className="w-5 h-5" />
+        </div>
+        <div className="space-y-3 flex-1">
+          <div className="space-y-1">
+            <span className="section-label text-[#0052FF]">
+              Primary AI Recommendation
+            </span>
+            <h3 className="text-base font-bold text-gray-900">
+              Improve ATS Score
+            </h3>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Your resume is currently missing{" "}
+              <strong className="text-gray-900 font-semibold">
+                React 19 Server Components
+              </strong>
+              . This skill is explicitly required in 3 of your bookmarked job
+              descriptions.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate("/dashboard/resume")}
+            className="inline-flex items-center gap-1 text-xs font-bold text-[#0052FF] hover:text-[#0040CC] transition-colors"
+          >
+            <span>Optimize Skills in Builder</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </motion.div>
+
+      <div className="space-y-3">
+        <span className="section-label px-0.5">Metrics</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {metrics.map((m, idx) => {
+            const Icon = m.icon;
+            return (
+              <motion.div
+                key={idx}
+                whileHover={{
+                  y: -2,
+                }}
+                onClick={() => navigate(m.tab)}
+                className="p-5 surface-card cursor-pointer"
+              >
+                <div className="flex justify-between items-start mb-2.5">
+                  <span className="text-[11px] font-semibold text-gray-500 tracking-tight leading-tight">
+                    {m.label}
+                  </span>
+                  <div className={`p-1.5 rounded-lg ${m.iconStyle}`}>
+                    <Icon className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-2xl font-bold text-gray-900">
+                    <AnimatedCounter value={parseInt(m.value.toString())} />
+                    {m.suffix}
+                  </span>
+                  <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1 py-0.5 rounded">
+                    {m.trend}
+                  </span>
+                </div>
+                <span className="text-[10px] text-gray-400 mt-1 block leading-tight">
+                  {m.desc}
+                </span>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {metrics.map((m, idx) => {
-          const Icon = m.icon;
-          return (
-            <motion.div
+      <div className="space-y-3">
+        <span className="section-label px-0.5">Projects</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {mockProjects.map((p, idx) => (
+            <div
               key={idx}
-              whileHover={{ y: -4, scale: 1.01 }}
-              onClick={() => setActiveTab(m.tab)}
-              className="p-5 rounded-card bg-gradient-to-b from-ascend-surface to-ascend-bg border border-ascend-border cursor-pointer transition-all duration-200 hover:border-ascend-primary/30 relative overflow-hidden group shadow-card"
+              onClick={() => navigate("/dashboard/portfolio")}
+              className="p-5 surface-card cursor-pointer"
             >
-              {/* Subtle top light reflection */}
-              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-
               <div className="flex justify-between items-start mb-3">
-                <span className="text-xs font-medium text-ascend-text-secondary">
-                  {m.label}
-                </span>
-                <div
-                  className={`p-2 rounded-button bg-white/5 border border-ascend-border ${m.iconColor}`}
+                <div>
+                  <h4 className="text-xs font-bold text-gray-800">{p.name}</h4>
+                  <p className="text-[10px] text-gray-400 mt-0.5">{p.role}</p>
+                </div>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                    p.status === "Published" ? "badge-success" : "badge-blue"
+                  }`}
                 >
-                  <Icon className="w-4.5 h-4.5" />
+                  {p.status}
+                </span>
+              </div>
+
+              <div className="space-y-1 mt-4">
+                <div className="flex justify-between text-[9px] text-gray-400">
+                  <span>ATS optimization rating</span>
+                  <span className="font-bold text-gray-700">{p.progress}%</span>
+                </div>
+                <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full bg-linear-to-r ${
+                      p.status === "Published"
+                        ? "from-emerald-400 to-emerald-500"
+                        : "from-[#0052FF] to-[#4D7CFF]"
+                    }`}
+                    style={{ width: `${p.progress}%` }}
+                  />
                 </div>
               </div>
 
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-bold tracking-tight text-white">
-                  <AnimatedCounter value={parseInt(m.value.toString())} />
-                  {m.suffix}
+              <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-50">
+                <span className="text-[9px] font-semibold text-gray-400">
+                  {p.score}
                 </span>
+                <div className="flex gap-1">
+                  {p.tech.map((t, i) => (
+                    <span
+                      key={i}
+                      className="px-1.5 py-0.5 rounded bg-gray-100 text-[8px] text-gray-500 font-mono"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <span className="text-[10px] text-ascend-text-muted mt-1 block">
-                {m.desc}
-              </span>
-            </motion.div>
-          );
-        })}
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Main Grid: Work & Suggestive Flow */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
-        {/* Left Side: Quick Actions & Timeline */}
-        <div className="space-y-8">
-          {/* Quick Actions */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-white uppercase tracking-widest px-1">
-              Quick Actions
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {quickActions.map((action, idx) => {
-                const Icon = action.icon;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveTab(action.tab)}
-                    className={`p-5 rounded-card bg-ascend-surface border text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-card flex flex-col justify-between h-36 relative group overflow-hidden ${action.color}`}
-                  >
-                    <div className="space-y-2">
-                      <div className="w-9 h-9 rounded-button bg-white/5 flex items-center justify-center border border-ascend-border group-hover:scale-110 transition-transform duration-200">
-                        <Icon className="w-5 h-5 text-white/70" />
-                      </div>
-                      <h4 className="text-sm font-semibold text-white tracking-wide">
-                        {action.title}
-                      </h4>
-                      <p className="text-[11px] text-ascend-text-secondary leading-normal font-light">
-                        {action.desc}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-ascend-primary mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span>{action.actionText}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Activity Timeline */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-white uppercase tracking-widest px-1">
-              Activity History
-            </h3>
-            <div className="p-6 rounded-card bg-ascend-surface border border-ascend-border space-y-6 shadow-card relative">
-              {timelineItems.map((item, idx) => {
-                const Icon = item.icon;
-                return (
-                  <div key={idx} className="flex gap-4 relative group">
-                    {/* Vertical Connecting Line */}
-                    {idx !== timelineItems.length - 1 && (
-                      <div className="absolute left-[17px] top-[30px] bottom-[-24px] w-[1px] bg-white/10 group-hover:bg-ascend-primary/30 transition-colors" />
-                    )}
-
-                    <div
-                      className={`w-9 h-9 rounded-button flex items-center justify-center shrink-0 z-10 ${item.iconBg}`}
-                    >
-                      <Icon className="w-4.5 h-4.5" />
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-xs font-semibold text-white">
-                          {item.title}
-                        </h4>
-                        <span className="text-[9px] text-ascend-text-muted flex items-center gap-1">
-                          <Calendar className="w-2.5 h-2.5" />
-                          {item.time}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-ascend-text-secondary leading-relaxed font-light">
-                        {item.desc}
-                      </p>
-                    </div>
+      <div className="space-y-3">
+        <span className="section-label px-0.5">Recent Activity</span>
+        <div className="p-5 surface-card space-y-4">
+          {timelineItems.map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <div key={idx} className="flex gap-4 relative group">
+                {idx !== timelineItems.length - 1 && (
+                  <div className="absolute left-4.25 top-8 -bottom-5 w-px bg-gray-100" />
+                )}
+                <div
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 z-10 ${item.iconStyle}`}
+                >
+                  <Icon className="w-4 h-4" />
+                </div>
+                <div className="space-y-0.5 pt-0.5">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-xs font-bold text-gray-800">
+                      {item.title}
+                    </h4>
+                    <span className="text-[9px] text-gray-400 font-medium">
+                      {item.time}
+                    </span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side: AI Suggestions & Large Banner */}
-        <div className="space-y-6">
-          {/* AI suggestions */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-white uppercase tracking-widest px-1">
-              AI Insights
-            </h3>
-
-            <div className="space-y-3">
-              {suggestions.map((sug, idx) => {
-                const Icon = sug.icon;
-                return (
-                  <div
-                    key={idx}
-                    className="p-4 rounded-card bg-ascend-surface/70 border border-ascend-border space-y-3 relative overflow-hidden group shadow-card"
-                  >
-                    <div className="flex gap-2">
-                      <Icon
-                        className={`w-4 h-4 shrink-0 mt-0.5 ${sug.iconColor}`}
-                      />
-                      <div className="space-y-1">
-                        <h4 className="text-[11px] font-bold text-white tracking-wide uppercase">
-                          {sug.title}
-                        </h4>
-                        <p className="text-[10.5px] text-ascend-text-secondary leading-relaxed font-light">
-                          {sug.desc}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setActiveTab(sug.tab)}
-                      className="w-full py-1.5 px-3 rounded-button bg-white/5 border border-ascend-border hover:border-ascend-primary/30 hover:bg-ascend-primary/5 text-[10px] font-semibold text-white tracking-wide flex items-center justify-center gap-1 group-hover:scale-[1.01] transition-all"
-                    >
-                      <span>{sug.action}</span>
-                      <ArrowRight className="w-3 h-3 text-ascend-primary" />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Large AI Banner */}
-          <div className="p-6 rounded-card bg-gradient-to-br from-ascend-ai/20 via-ascend-ai/5 to-ascend-bg border border-ascend-ai/20 relative overflow-hidden group shadow-floating">
-            {/* Ambient Purple Light Flare */}
-            <div className="absolute -left-12 -bottom-12 w-28 h-28 bg-ascend-ai/10 rounded-full blur-2xl" />
-
-            <div className="space-y-4 relative z-10">
-              <div className="w-8 h-8 rounded-button bg-ascend-ai/20 border border-ascend-ai/30 flex items-center justify-center text-white">
-                <Zap className="w-4 h-4 fill-current" />
+                  <p className="text-[11px] text-gray-500 leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
               </div>
+            );
+          })}
+        </div>
+      </div>
 
+      <div className="space-y-3">
+        <span className="section-label px-0.5">AI Chat</span>
+        <motion.div
+          whileHover={{ y: -1 }}
+          className="p-5 rounded-xl bg-linear-to-br from-[#0052FF] to-[#4D7CFF] text-white relative overflow-hidden shadow-md"
+        >
+          <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/10 blur-xl pointer-events-none" />
+          <div className="flex gap-4 items-start relative z-10">
+            <div className="w-10 h-10 rounded-xl bg-white/20 border border-white/25 flex items-center justify-center text-white shrink-0">
+              <Bot className="w-5 h-5" />
+            </div>
+            <div className="space-y-3 flex-1">
               <div className="space-y-1">
-                <h4 className="text-base font-bold text-white leading-tight">
-                  Let AI Transform Your Career
+                <h4
+                  className="text-base font-bold text-white leading-tight"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  Consult AI Coach
                 </h4>
-                <p className="text-[10px] text-ascend-text-secondary leading-normal font-light">
-                  Elevate your applications, design high-impact summaries, and
-                  receive personalized coaching.
+                <p className="text-[11px] text-blue-100 leading-relaxed max-w-lg">
+                  Ask me anything about resume rewriting, interview preparation,
+                  or portfolio themes. I have full context of your workspace.
                 </p>
               </div>
 
-              <button
-                onClick={() => setActiveTab("ai-assistant")}
-                className="py-2 px-4 rounded-button bg-gradient-to-r from-ascend-ai to-[#6D28D9] hover:from-ascend-ai/90 hover:to-[#5B21B6] text-white font-semibold text-xs tracking-wide shadow-floating transition-all duration-200 flex items-center justify-center gap-1.5"
-              >
-                <span>Ask AI Career Coach</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Ask the coach..."
+                  value={miniChatInput}
+                  onChange={(e) => setMiniChatInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && miniChatInput.trim()) {
+                      navigate("/dashboard/ai-assistant");
+                    }
+                  }}
+                  className="flex-1 bg-white/10 hover:bg-white/15 border border-white/20 text-white placeholder-blue-200 text-xs rounded-lg px-3 py-2 outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all"
+                />
+                <button
+                  onClick={() => {
+                    if (miniChatInput.trim()) {
+                      navigate("/dashboard/ai-assistant");
+                    }
+                  }}
+                  className="px-3.5 bg-white text-[#0052FF] hover:bg-blue-50 font-bold text-xs rounded-lg transition-colors flex items-center justify-center shrink-0"
+                >
+                  Send
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

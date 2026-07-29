@@ -1,140 +1,211 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginFormData } from "../../lib/validations/auth";
 import { googleLoginUser, loginUser } from "../../queries/auth.queries";
 import { useAuth } from "../../contexts/Authcontext/queries";
 import { GoogleLogin } from "@react-oauth/google";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const auth = useAuth();
-  const [rememberMe, setRememberMe] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const [serverError, setServerError] = useState("");
+  const hasGoogleClient =
+    !!import.meta.env.VITE_GOOGLE_CLIENT_ID &&
+    import.meta.env.VITE_GOOGLE_CLIENT_ID !== "disabled-placeholder-client-id";
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  async function onSubmit(data: LoginFormData) {
     try {
       setLoading(true);
-      setError("");
-
+      setServerError("");
       const response = await loginUser({
-        email,
-        password,
-        rememberMe,
+        email: data.email,
+        password: data.password,
+        rememberMe: data.rememberMe ?? false,
       });
-
       auth.login(response.accessToken);
-
       navigate("/dashboard");
     } catch {
-      console.error(error);
+      setServerError("Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
     }
   }
-  return (
-    <div className="w-full max-w-md rounded-3xl border border-white/5 bg-white/[0.02] p-8 backdrop-blur-2xl shadow-[0_0_80px_rgba(245,158,11,0.05)]">
-      <div>
-        <h2 className="text-3xl font-bold text-white tracking-tight">Welcome Back</h2>
 
-        <p className="mt-2 text-zinc-400 text-sm">Sign in to manage your portfolio.</p>
+  return (
+    <div className="w-full max-w-md">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-full mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+          <span className="text-[11px] font-semibold text-blue-600 tracking-wide">
+            Welcome back
+          </span>
+        </div>
+        <h2
+          className="text-3xl font-bold text-gray-900 tracking-tight"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Sign in to Ascend
+        </h2>
+        <p className="mt-2 text-sm text-gray-500">
+          Your AI career OS is ready for you.
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Email */}
         <div>
-          <label className="mb-2 block text-sm text-zinc-400">Email</label>
-
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            Email
+          </label>
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("email")}
             placeholder="you@example.com"
-            className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+            className="input-light w-full px-4 py-3 text-sm"
           />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+          )}
         </div>
 
+        {/* Password */}
         <div>
-          <label className="mb-2 block text-sm text-zinc-400">Password</label>
-
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-          />
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              {...register("password")}
+              placeholder="••••••••"
+              className="input-light w-full px-4 py-3 text-sm pr-11"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((p) => !p)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.password.message}
+            </p>
+          )}
         </div>
-        <div className="flex items-center justify-between py-1 text-sm">
-          <div className="flex items-center gap-2">
+
+        {/* Remember + Forgot */}
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-2 cursor-pointer group">
             <input
               type="checkbox"
-              id="rememberMe"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="accent-amber-500"
+              {...register("rememberMe")}
+              className="w-4 h-4 accent-[#0052FF] rounded"
             />
-
-            <label htmlFor="rememberMe" className="text-zinc-400 select-none">Remember Me</label>
-          </div>
+            <span className="text-sm text-gray-500 select-none group-hover:text-gray-700">
+              Remember me
+            </span>
+          </label>
           <button
             type="button"
             onClick={() => navigate("/forgot-password")}
-            className="text-amber-400 hover:text-amber-300 font-medium"
+            className="text-sm font-medium text-[#0052FF] hover:text-[#0040CC] transition-colors"
           >
-            Forgot Password?
+            Forgot password?
           </button>
         </div>
-        {error && <p className="text-sm text-red-400">{error}</p>}
+
+        {/* Server Error */}
+        {serverError && (
+          <div className="px-3 py-2.5 bg-red-50 border border-red-100 rounded-lg">
+            <p className="text-sm text-red-600">{serverError}</p>
+          </div>
+        )}
+
+        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 py-3 font-semibold text-black transition duration-300 hover:scale-[1.01] hover:shadow-[0_0_35px_rgba(245,158,11,0.3)] disabled:opacity-50"
+          className="btn-primary w-full py-3 text-sm rounded-xl disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {loading ? "Signing In..." : "Sign In"}
+          {loading ? (
+            <span className="flex items-center gap-2 justify-center">
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Signing in...
+            </span>
+          ) : (
+            <span className="flex items-center gap-2 justify-center">
+              Sign In
+              <ArrowRight className="w-4 h-4" />
+            </span>
+          )}
         </button>
-        <div className="flex items-center gap-3 py-2">
-          <div className="h-px flex-1 bg-white/10" />
 
-          <span className="text-sm text-zinc-500">OR</span>
+        {/* Google Login */}
+        {hasGoogleClient && (
+          <>
+            <div className="flex items-center gap-3 py-1">
+              <div className="h-px flex-1 bg-gray-200" />
+              <span className="text-xs text-gray-400 font-medium">or</span>
+              <div className="h-px flex-1 bg-gray-200" />
+            </div>
 
-          <div className="h-px flex-1 bg-white/10" />
-        </div>
-
-        <div className="w-full flex justify-center">
-          <GoogleLogin
-            onSuccess={async (credenialResponse) => {
-              if (!credenialResponse.credential) {
-                return;
-              }
-              try {
-                const response = await googleLoginUser(
-                  credenialResponse.credential,
-                );
-                if (response && response.accessToken) {
-                  auth.login(response.accessToken);
-                  navigate("/dashboard");
-                } else {
-                  setError("Google Login failed: No access token returned");
-                }
-              } catch (e: any) {
-                setError(e.message || "Google Login Failed");
-              }
-            }}
-            onError={() => {
-              setError("Google Login Failed");
-            }}
-          />
-        </div>
+            <div className="w-full flex justify-center">
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  if (!credentialResponse.credential) return;
+                  try {
+                    const response = await googleLoginUser(
+                      credentialResponse.credential
+                    );
+                    if (response && response.accessToken) {
+                      auth.login(response.accessToken);
+                      navigate("/dashboard");
+                    } else {
+                      setServerError(
+                        "Google Login failed: No access token returned"
+                      );
+                    }
+                  } catch (e: unknown) {
+                    setServerError(
+                      e instanceof Error ? e.message : "Google Login Failed"
+                    );
+                  }
+                }}
+                onError={() => {
+                  setServerError("Google Login Failed");
+                }}
+              />
+            </div>
+          </>
+        )}
       </form>
 
-      <p className="mt-8 text-center text-sm text-zinc-400">
-        Don't have an account?{" "}
+      <p className="mt-8 text-center text-sm text-gray-500">
+        Don&apos;t have an account?{" "}
         <button
           type="button"
           onClick={() => navigate("/register")}
-          className="font-medium text-amber-400 hover:text-amber-300"
+          className="font-semibold text-[#0052FF] hover:text-[#0040CC] transition-colors"
         >
           Create Account
         </button>
