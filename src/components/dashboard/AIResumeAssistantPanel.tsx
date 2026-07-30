@@ -85,15 +85,15 @@ export default function AIResumeAssistantPanel() {
   };
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl space-y-6">
+    <div className="rounded-xl border border-ascend-border bg-ascend-bg p-6 shadow-2xl space-y-6">
       {/* Sub Tabs */}
-      <div className="flex border-b border-zinc-800">
+      <div className="flex border-b border-ascend-border">
         <button
           onClick={() => setActiveTab("ats")}
           className={`pb-3 px-4 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 ${
             activeTab === "ats"
-              ? "border-amber-500 text-amber-500"
-              : "border-transparent text-zinc-400 hover:text-zinc-200"
+              ? "border-ascend-primary text-ascend-primary"
+              : "border-transparent text-ascend-text-muted hover:text-ascend-text-primary"
           }`}
         >
           <FileCheck2 className="w-4 h-4" />
@@ -103,8 +103,8 @@ export default function AIResumeAssistantPanel() {
           onClick={() => setActiveTab("summary")}
           className={`pb-3 px-4 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 ${
             activeTab === "summary"
-              ? "border-amber-500 text-amber-500"
-              : "border-transparent text-zinc-400 hover:text-zinc-200"
+              ? "border-ascend-primary text-ascend-primary"
+              : "border-transparent text-ascend-text-muted hover:text-ascend-text-primary"
           }`}
         >
           <BookOpen className="w-4 h-4" />
@@ -114,8 +114,8 @@ export default function AIResumeAssistantPanel() {
           onClick={() => setActiveTab("grammar")}
           className={`pb-3 px-4 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 ${
             activeTab === "grammar"
-              ? "border-amber-500 text-amber-500"
-              : "border-transparent text-zinc-400 hover:text-zinc-200"
+              ? "border-ascend-primary text-ascend-primary"
+              : "border-transparent text-ascend-text-muted hover:text-ascend-text-primary"
           }`}
         >
           <Sparkles className="w-4 h-4" />
@@ -128,7 +128,7 @@ export default function AIResumeAssistantPanel() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col space-y-2">
-              <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+              <label className="text-[10px] font-semibold text-ascend-text-muted uppercase tracking-wider">
                 Paste Resume Text
               </label>
               <textarea
@@ -136,11 +136,11 @@ export default function AIResumeAssistantPanel() {
                 onChange={(e) => setAtsResume(e.target.value)}
                 placeholder="Paste the text content of your resume here..."
                 rows={10}
-                className="w-full p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors text-xs resize-none"
+                className="w-full p-4 bg-ascend-surface-elevated border border-ascend-border rounded-xl text-ascend-text-primary placeholder-ascend-text-muted focus:outline-none focus:border-ascend-primary transition-colors text-xs resize-none"
               />
             </div>
             <div className="flex flex-col space-y-2">
-              <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+              <label className="text-[10px] font-semibold text-ascend-text-muted uppercase tracking-wider">
                 Paste Job Description
               </label>
               <textarea
@@ -148,7 +148,7 @@ export default function AIResumeAssistantPanel() {
                 onChange={(e) => setAtsJobDesc(e.target.value)}
                 placeholder="Paste the target job description to match against..."
                 rows={10}
-                className="w-full p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors text-xs resize-none"
+                className="w-full p-4 bg-ascend-surface-elevated border border-ascend-border rounded-xl text-ascend-text-primary placeholder-ascend-text-muted focus:outline-none focus:border-ascend-primary transition-colors text-xs resize-none"
               />
             </div>
           </div>
@@ -157,7 +157,7 @@ export default function AIResumeAssistantPanel() {
             <button
               onClick={handleAnalyzeATS}
               disabled={isLoading || !atsResume.trim() || !atsJobDesc.trim()}
-              className="px-6 py-3 bg-amber-600 hover:bg-amber-500 disabled:bg-zinc-850 text-white rounded-xl transition-all flex items-center gap-2 text-xs font-semibold disabled:opacity-40"
+              className="px-6 py-3 bg-ascend-primary hover:bg-ascend-primary-hover disabled:bg-ascend-surface-elevated text-white rounded-xl transition-all flex items-center gap-2 text-xs font-semibold disabled:opacity-40"
             >
               {isLoading ? (
                 <>
@@ -175,7 +175,7 @@ export default function AIResumeAssistantPanel() {
 
           {/* ATS Result Panel */}
           {atsResult && (
-            <div className="p-6 bg-zinc-900/40 border border-zinc-800 rounded-xl space-y-6 animate-fadeIn">
+            <div className="p-6 bg-ascend-surface-elevated/40 border border-ascend-border rounded-xl space-y-6 animate-fadeIn">
               <div className="flex items-center gap-6">
                 {/* Custom Circular Progress */}
                 <div className="relative w-24 h-24 flex items-center justify-center shrink-0">
@@ -184,7 +184,7 @@ export default function AIResumeAssistantPanel() {
                       cx="48"
                       cy="48"
                       r="40"
-                      className="stroke-zinc-800 fill-none"
+                      className="stroke-ascend-border fill-none"
                       strokeWidth="8"
                     />
                     <circle
@@ -195,7 +195,7 @@ export default function AIResumeAssistantPanel() {
                         atsResult.score >= 80
                           ? "stroke-emerald-500"
                           : atsResult.score >= 55
-                          ? "stroke-amber-500"
+                          ? "stroke-ascend-primary"
                           : "stroke-red-500"
                       }`}
                       strokeWidth="8"
@@ -203,16 +203,16 @@ export default function AIResumeAssistantPanel() {
                       strokeDashoffset={251.2 - (251.2 * atsResult.score) / 100}
                     />
                   </svg>
-                  <span className="absolute text-xl font-bold text-zinc-100">
+                  <span className="absolute text-xl font-bold text-ascend-text-primary">
                     {atsResult.score}%
                   </span>
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-semibold text-zinc-100 flex items-center gap-1.5">
+                  <h4 className="text-sm font-semibold text-ascend-text-primary flex items-center gap-1.5">
                     ATS Match Summary
                   </h4>
-                  <p className="text-xs text-zinc-400 mt-1 max-w-lg">
+                  <p className="text-xs text-ascend-text-muted mt-1 max-w-lg">
                     {atsResult.score >= 80
                       ? "Excellent alignment! Your resume captures most core keywords and prerequisites."
                       : atsResult.score >= 55
@@ -222,7 +222,7 @@ export default function AIResumeAssistantPanel() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-zinc-800/80">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-ascend-border/80">
                 <div className="space-y-2">
                   <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
                     Matched Skills / Keywords ({atsResult.matchedKeywords?.length || 0})
@@ -238,13 +238,13 @@ export default function AIResumeAssistantPanel() {
                         </span>
                       ))
                     ) : (
-                      <span className="text-xs text-zinc-600">None detected.</span>
+                      <span className="text-xs text-ascend-text-muted">None detected.</span>
                     )}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-ascend-primary uppercase tracking-wider">
                     Missing Keywords ({atsResult.missingKeywords?.length || 0})
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -252,26 +252,26 @@ export default function AIResumeAssistantPanel() {
                       atsResult.missingKeywords.map((kw, i) => (
                         <span
                           key={i}
-                          className="px-2.5 py-1 text-[10px] bg-amber-500/10 border border-amber-500/25 text-amber-500 rounded-full font-medium"
+                          className="px-2.5 py-1 text-[10px] bg-ascend-primary/10 border border-ascend-primary/25 text-ascend-primary rounded-full font-medium"
                         >
                           {kw}
                         </span>
                       ))
                     ) : (
-                      <span className="text-xs text-zinc-600">No missing critical keywords!</span>
+                      <span className="text-xs text-ascend-text-muted">No missing critical keywords!</span>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-zinc-800/80 space-y-2">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+              <div className="pt-4 border-t border-ascend-border/80 space-y-2">
+                <span className="text-[10px] font-bold text-ascend-text-muted uppercase tracking-wider flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 text-ascend-primary" />
                   Actionable Recommendations
                 </span>
                 <ul className="space-y-1.5">
                   {atsResult.recommendations?.map((rec, i) => (
-                    <li key={i} className="text-xs text-zinc-300 list-disc list-inside">
+                    <li key={i} className="text-xs text-ascend-text-secondary list-disc list-inside">
                       {rec}
                     </li>
                   ))}
@@ -285,7 +285,7 @@ export default function AIResumeAssistantPanel() {
       {activeTab === "summary" && (
         <div className="space-y-4">
           <div className="flex flex-col space-y-2">
-            <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+            <label className="text-[10px] font-semibold text-ascend-text-muted uppercase tracking-wider">
               Candidate Background (Key Skills, Projects, Experience details)
             </label>
             <textarea
@@ -293,7 +293,7 @@ export default function AIResumeAssistantPanel() {
               onChange={(e) => setSummaryInput(e.target.value)}
               placeholder="List some of your technical expertise or bullet points..."
               rows={5}
-              className="w-full p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors text-xs resize-none"
+              className="w-full p-4 bg-ascend-surface-elevated border border-ascend-border rounded-xl text-ascend-text-primary placeholder-ascend-text-muted focus:outline-none focus:border-ascend-primary transition-colors text-xs resize-none"
             />
           </div>
 
@@ -301,7 +301,7 @@ export default function AIResumeAssistantPanel() {
             <button
               onClick={handleGenerateSummary}
               disabled={isLoading || !summaryInput.trim()}
-              className="px-6 py-3 bg-amber-600 hover:bg-amber-500 disabled:bg-zinc-850 text-white rounded-xl transition-all flex items-center gap-2 text-xs font-semibold disabled:opacity-40"
+              className="px-6 py-3 bg-ascend-primary hover:bg-ascend-primary-hover disabled:bg-ascend-surface-elevated text-white rounded-xl transition-all flex items-center gap-2 text-xs font-semibold disabled:opacity-40"
             >
               {isLoading ? (
                 <>
@@ -318,20 +318,20 @@ export default function AIResumeAssistantPanel() {
           </div>
 
           {generatedSummary && (
-            <div className="p-5 bg-zinc-900/40 border border-zinc-800 rounded-xl space-y-3 animate-fadeIn">
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-                <span className="text-[10px] font-semibold text-amber-500 uppercase tracking-wider">
+            <div className="p-5 bg-ascend-surface-elevated/40 border border-ascend-border rounded-xl space-y-3 animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-ascend-border pb-2">
+                <span className="text-[10px] font-semibold text-ascend-primary uppercase tracking-wider">
                   Generated Summary
                 </span>
                 <button
                   onClick={() => handleCopy(generatedSummary)}
-                  className="p-1.5 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-250 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-medium"
+                  className="p-1.5 hover:bg-ascend-surface-elevated text-ascend-text-muted hover:text-ascend-text-secondary rounded-lg transition-colors flex items-center gap-1.5 text-xs font-medium"
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                   {copied ? "Copied!" : "Copy"}
                 </button>
               </div>
-              <p className="text-xs text-zinc-300 leading-relaxed italic">
+              <p className="text-xs text-ascend-text-secondary leading-relaxed italic">
                 "{generatedSummary}"
               </p>
             </div>
@@ -342,7 +342,7 @@ export default function AIResumeAssistantPanel() {
       {activeTab === "grammar" && (
         <div className="space-y-4">
           <div className="flex flex-col space-y-2">
-            <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+            <label className="text-[10px] font-semibold text-ascend-text-muted uppercase tracking-wider">
               Input Text (Experience points / description)
             </label>
             <textarea
@@ -350,7 +350,7 @@ export default function AIResumeAssistantPanel() {
               onChange={(e) => setGrammarInput(e.target.value)}
               placeholder="Paste the text segment or bullet point you want to fix and polish..."
               rows={5}
-              className="w-full p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors text-xs resize-none"
+              className="w-full p-4 bg-ascend-surface-elevated border border-ascend-border rounded-xl text-ascend-text-primary placeholder-ascend-text-muted focus:outline-none focus:border-ascend-primary transition-colors text-xs resize-none"
             />
           </div>
 
@@ -358,7 +358,7 @@ export default function AIResumeAssistantPanel() {
             <button
               onClick={handleFixGrammar}
               disabled={isLoading || !grammarInput.trim()}
-              className="px-6 py-3 bg-amber-600 hover:bg-amber-500 disabled:bg-zinc-850 text-white rounded-xl transition-all flex items-center gap-2 text-xs font-semibold disabled:opacity-40"
+              className="px-6 py-3 bg-ascend-primary hover:bg-ascend-primary-hover disabled:bg-ascend-surface-elevated text-white rounded-xl transition-all flex items-center gap-2 text-xs font-semibold disabled:opacity-40"
             >
               {isLoading ? (
                 <>
@@ -375,20 +375,20 @@ export default function AIResumeAssistantPanel() {
           </div>
 
           {polishedText && (
-            <div className="p-5 bg-zinc-900/40 border border-zinc-800 rounded-xl space-y-3 animate-fadeIn">
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-                <span className="text-[10px] font-semibold text-amber-500 uppercase tracking-wider">
+            <div className="p-5 bg-ascend-surface-elevated/40 border border-ascend-border rounded-xl space-y-3 animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-ascend-border pb-2">
+                <span className="text-[10px] font-semibold text-ascend-primary uppercase tracking-wider">
                   Polished Text
                 </span>
                 <button
                   onClick={() => handleCopy(polishedText)}
-                  className="p-1.5 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-250 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-medium"
+                  className="p-1.5 hover:bg-ascend-surface-elevated text-ascend-text-muted hover:text-ascend-text-secondary rounded-lg transition-colors flex items-center gap-1.5 text-xs font-medium"
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                   {copied ? "Copied!" : "Copy"}
                 </button>
               </div>
-              <p className="text-xs text-zinc-300 leading-relaxed">
+              <p className="text-xs text-ascend-text-secondary leading-relaxed">
                 {polishedText}
               </p>
             </div>

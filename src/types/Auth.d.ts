@@ -12,10 +12,10 @@ namespace Auth {
   }
 
   interface LoginResponse {
-    accessToken: string;
-    refreshToken: string;
-    fullName: string;
-    email: string;
+    AccessToken: string;
+    RefreshToken: string;
+    FullName: string;
+    Email: string;
   }
   type AuthContextType = {
     isAuthenticated: boolean;

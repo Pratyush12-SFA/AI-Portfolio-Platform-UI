@@ -34,7 +34,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-ascend-text-primary flex flex-col lg:flex-row relative workspace-grid">
+    <div className="min-h-screen bg-ascend-bg text-ascend-text-primary flex flex-col lg:flex-row relative workspace-grid">
       <CommandPalette
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
@@ -58,7 +58,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="relative z-20 h-full w-72 lg:w-auto">
           <button
             onClick={() => setMobileMenuOpen(false)}
-            className="absolute top-6 right-6 lg:hidden p-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100"
+            className="absolute top-6 right-6 lg:hidden p-2 text-ascend-text-muted hover:text-ascend-text-secondary rounded-lg hover:bg-ascend-surface-elevated"
           >
             <X className="w-5 h-5" />
           </button>
@@ -82,7 +82,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             className="fixed inset-0 bg-black/15 backdrop-blur-xs z-40"
           />
           {/* Drawer Panel */}
-          <div className="relative z-50 w-full max-w-md sm:w-80 md:w-96 bg-white h-full shadow-2xl overflow-hidden border-l border-gray-200 flex flex-col animate-slide-in-right">
+          <div className="relative z-50 w-full max-w-md sm:w-80 md:w-96 bg-ascend-surface h-full shadow-2xl overflow-hidden border-l border-ascend-border flex flex-col animate-slide-in-right">
             <PersistentAIAssistant
               floatingMode={true}
               onClose={() => setIsAiOpen(false)}

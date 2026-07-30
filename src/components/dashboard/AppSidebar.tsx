@@ -62,18 +62,18 @@ export default function AppSidebar({
   return (
     <aside className="w-72 surface-sidebar flex flex-col justify-between h-screen sticky top-0 no-print shrink-0 select-none z-30">
       <div className="flex flex-col flex-1 overflow-y-auto min-h-0">
-        <div className="p-6 flex items-center gap-3 border-b border-gray-100">
+        <div className="p-6 flex items-center gap-3 border-b border-ascend-border">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0052FF] to-[#4D7CFF] flex items-center justify-center shadow-[0_4px_14px_rgba(0,82,255,0.3)] shrink-0">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div className="flex flex-col">
             <span
-              className="font-bold tracking-tight text-gray-900 text-lg leading-tight"
+              className="font-bold tracking-tight text-ascend-text-primary text-lg leading-tight"
               style={{ fontFamily: "var(--font-display)" }}
             >
               Ascend
             </span>
-            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-widest leading-none">
+            <span className="text-[10px] text-ascend-text-muted font-medium uppercase tracking-widest leading-none">
               AI Career OS
             </span>
           </div>
@@ -82,7 +82,7 @@ export default function AppSidebar({
         <nav className="p-3 space-y-4 flex-1">
           {navGroups.map((group) => (
             <div key={group.label}>
-              <div className="px-3 py-1 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+              <div className="px-3 py-1 text-[9px] font-bold text-ascend-text-muted uppercase tracking-widest">
                 {group.label}
               </div>
               <div className="space-y-0.5 mt-1">
@@ -95,27 +95,27 @@ export default function AppSidebar({
                       onClick={() => navigate(item.path)}
                       className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 relative group ${
                         active
-                          ? "bg-[#EEF3FF] text-[#0052FF] border border-[rgba(0,82,255,0.15)]"
-                          : "text-gray-500 hover:bg-gray-50 hover:text-gray-800 border border-transparent"
+                          ? "bg-ascend-primary-light text-ascend-primary border border-ascend-primary/15"
+                          : "text-ascend-text-secondary hover:bg-ascend-surface-elevated hover:text-ascend-text-primary border border-transparent"
                       }`}
                     >
                       {active && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[#0052FF] rounded-r-full" />
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-ascend-primary rounded-r-full" />
                       )}
 
                       <div className="flex items-center gap-3">
                         <Icon
                           className={`w-4.5 h-4.5 transition-colors duration-150 ${
                             active
-                              ? "text-[#0052FF]"
-                              : "text-gray-400 group-hover:text-gray-600"
+                              ? "text-ascend-primary"
+                              : "text-ascend-text-muted group-hover:text-ascend-text-secondary"
                           }`}
                         />
                         <span className="tracking-normal">{item.label}</span>
                       </div>
 
                       {item.path === "/dashboard/ai-assistant" && (
-                        <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-blue-100 text-blue-600 border border-blue-200">
+                        <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-ascend-primary-light text-ascend-primary border border-ascend-primary/20">
                           AI
                         </span>
                       )}
@@ -128,28 +128,28 @@ export default function AppSidebar({
         </nav>
       </div>
 
-      <div className="p-4 border-t border-gray-100">
-        <div className="p-4 rounded-xl bg-gradient-to-br from-[#EEF3FF] to-[#F8FAFF] border border-[rgba(0,82,255,0.1)] relative overflow-hidden">
+      <div className="p-4 border-t border-ascend-border">
+        <div className="p-4 rounded-xl bg-ascend-primary-light border border-ascend-primary/10 relative overflow-hidden">
           <div className="flex justify-between items-start mb-3">
             <div className="flex items-center gap-1.5">
-              <Crown className="w-4 h-4 text-[#0052FF]" />
-              <span className="text-[11px] font-semibold text-[#0052FF] uppercase tracking-wider">
+              <Crown className="w-4 h-4 text-ascend-primary" />
+              <span className="text-[11px] font-semibold text-ascend-primary uppercase tracking-wider">
                 PRO PLAN
               </span>
             </div>
-            <span className="text-[10px] text-gray-500">
+            <span className="text-[10px] text-ascend-text-muted">
               {creditsRemaining} Credits
             </span>
           </div>
 
           <div className="space-y-1.5">
-            <div className="w-full h-1.5 rounded-full bg-blue-100 overflow-hidden">
+            <div className="w-full h-1.5 rounded-full bg-ascend-primary-light overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-[#0052FF] to-[#4D7CFF] transition-all duration-1000 ease-out"
+                className="h-full rounded-full bg-gradient-to-r from-ascend-primary to-ascend-primary-mid transition-all duration-1000 ease-out"
                 style={{ width: `${creditsPercentage}%` }}
               />
             </div>
-            <div className="flex justify-between text-[9px] text-gray-400">
+            <div className="flex justify-between text-[9px] text-ascend-text-muted">
               <span>AI Credits Used</span>
               <span>
                 {creditsUsed}/{totalCredits}
@@ -157,23 +157,23 @@ export default function AppSidebar({
             </div>
           </div>
 
-          <button className="w-full mt-4 py-2 px-3 rounded-lg bg-gradient-to-r from-[#0052FF] to-[#4D7CFF] hover:from-[#0040CC] hover:to-[#0052FF] text-white font-semibold text-xs tracking-wide shadow-[0_2px_8px_rgba(0,82,255,0.3)] hover:shadow-[0_4px_16px_rgba(0,82,255,0.4)] transition-all duration-200 flex items-center justify-center gap-1">
+          <button className="w-full mt-4 py-2 px-3 rounded-lg bg-gradient-to-r from-ascend-primary to-ascend-primary-mid hover:from-ascend-primary-hover hover:to-ascend-primary text-white font-semibold text-xs tracking-wide shadow-[0_2px_8px_rgba(0,82,255,0.3)] hover:shadow-[0_4px_16px_rgba(0,82,255,0.4)] transition-all duration-200 flex items-center justify-center gap-1">
             <span>Upgrade Workspace</span>
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      <div className="p-4 border-t border-gray-100 flex items-center justify-between gap-3 bg-gray-50">
+      <div className="p-4 border-t border-ascend-border flex items-center justify-between gap-3 bg-ascend-surface-elevated">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0052FF] to-[#4D7CFF] flex items-center justify-center text-sm font-bold text-white shadow-[0_2px_8px_rgba(0,82,255,0.25)]">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-ascend-primary to-ascend-primary-mid flex items-center justify-center text-sm font-bold text-white shadow-[0_2px_8px_rgba(0,82,255,0.25)]">
             U
           </div>
           <div className="flex flex-col text-left overflow-hidden">
-            <span className="text-sm font-semibold text-gray-800 truncate">
+            <span className="text-sm font-semibold text-ascend-text-primary truncate">
               User
             </span>
-            <span className="text-[10px] text-gray-400 truncate">
+            <span className="text-[10px] text-ascend-text-muted truncate">
               Account
             </span>
           </div>
@@ -182,7 +182,7 @@ export default function AppSidebar({
         <button
           onClick={onLogout}
           title="Sign out of Ascend"
-          className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-150 shrink-0"
+          className="p-2 text-ascend-text-muted hover:text-ascend-danger hover:bg-ascend-danger-light rounded-lg transition-colors duration-150 shrink-0"
         >
           <LogOut className="w-4 h-4" />
         </button>

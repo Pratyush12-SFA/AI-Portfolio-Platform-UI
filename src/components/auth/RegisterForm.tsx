@@ -53,7 +53,7 @@ export default function RegisterForm() {
         email: data.email,
         password: data.password,
       });
-      auth.login(response.accessToken);
+      auth.login(response.AccessToken);
       navigate("/dashboard");
     } catch {
       setError("Registration failed. Please try again.");
@@ -66,19 +66,19 @@ export default function RegisterForm() {
     <div className="w-full max-w-md">
       {/* Header */}
       <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-full mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-          <span className="text-[11px] font-semibold text-blue-600 tracking-wide">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-ascend-primary-light border border-ascend-primary/20 rounded-full mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-ascend-primary" />
+          <span className="text-[11px] font-semibold text-ascend-primary tracking-wide">
             Get started for free
           </span>
         </div>
         <h2
-          className="text-3xl font-bold text-gray-900 tracking-tight"
+          className="text-3xl font-bold text-ascend-text-primary tracking-tight"
           style={{ fontFamily: "var(--font-display)" }}
         >
           Create your account
         </h2>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-ascend-text-muted">
           Join Ascend and accelerate your career with AI.
         </p>
       </div>
@@ -86,7 +86,7 @@ export default function RegisterForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Full Name */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label className="mb-1.5 block text-sm font-medium text-ascend-text-secondary">
             Full Name
           </label>
           <input
@@ -96,13 +96,13 @@ export default function RegisterForm() {
             className="input-light w-full px-4 py-3 text-sm"
           />
           {errors.fullName && (
-            <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>
+            <p className="mt-1 text-sm text-ascend-danger">{errors.fullName.message}</p>
           )}
         </div>
 
         {/* Email */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label className="mb-1.5 block text-sm font-medium text-ascend-text-secondary">
             Email
           </label>
           <input
@@ -112,13 +112,13 @@ export default function RegisterForm() {
             className="input-light w-full px-4 py-3 text-sm"
           />
           {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            <p className="mt-1 text-sm text-ascend-danger">{errors.email.message}</p>
           )}
         </div>
 
         {/* Password */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label className="mb-1.5 block text-sm font-medium text-ascend-text-secondary">
             Password
           </label>
           <div className="relative">
@@ -131,7 +131,7 @@ export default function RegisterForm() {
             <button
               type="button"
               onClick={() => setShowPassword((p) => !p)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-ascend-text-muted hover:text-ascend-text-secondary p-1"
             >
               {showPassword ? (
                 <EyeOff className="w-4 h-4" />
@@ -141,13 +141,13 @@ export default function RegisterForm() {
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+            <p className="mt-1 text-sm text-ascend-danger">{errors.password.message}</p>
           )}
         </div>
 
         {/* Confirm Password */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label className="mb-1.5 block text-sm font-medium text-ascend-text-secondary">
             Confirm Password
           </label>
           <input
@@ -157,14 +157,14 @@ export default function RegisterForm() {
             className="input-light w-full px-4 py-3 text-sm"
           />
           {errors.confirmPassword && (
-            <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+            <p className="mt-1 text-sm text-ascend-danger">{errors.confirmPassword.message}</p>
           )}
         </div>
 
         {/* Error */}
         {error && (
-          <div className="px-3 py-2.5 bg-red-50 border border-red-100 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
+          <div className="px-3 py-2.5 bg-ascend-danger-light border border-ascend-danger/20 rounded-lg">
+            <p className="text-sm text-ascend-danger">{error}</p>
           </div>
         )}
 
@@ -190,9 +190,9 @@ export default function RegisterForm() {
         {hasGoogleClient && (
           <>
             <div className="flex items-center gap-3 py-1">
-              <div className="h-px flex-1 bg-gray-200" />
-              <span className="text-xs text-gray-400 font-medium">or</span>
-              <div className="h-px flex-1 bg-gray-200" />
+              <div className="h-px flex-1 bg-ascend-border" />
+              <span className="text-xs text-ascend-text-muted font-medium">or</span>
+              <div className="h-px flex-1 bg-ascend-border" />
             </div>
 
             <div className="w-full flex justify-center">
@@ -203,8 +203,8 @@ export default function RegisterForm() {
                     const response = await googleLoginUser(
                       credentialResponse.credential
                     );
-                    if (response && response.accessToken) {
-                      auth.login(response.accessToken);
+                    if (response && response.AccessToken) {
+                      auth.login(response.AccessToken);
                       navigate("/dashboard");
                     } else {
                       setError("Google sign up failed: No access token returned");
@@ -222,12 +222,12 @@ export default function RegisterForm() {
         )}
       </form>
 
-      <p className="mt-8 text-center text-sm text-gray-500">
+      <p className="mt-8 text-center text-sm text-ascend-text-muted">
         Already have an account?{" "}
         <button
           type="button"
           onClick={() => navigate("/login")}
-          className="font-semibold text-[#0052FF] hover:text-[#0040CC] transition-colors"
+          className="font-semibold text-ascend-primary hover:text-ascend-primary-hover transition-colors"
         >
           Sign In
         </button>
