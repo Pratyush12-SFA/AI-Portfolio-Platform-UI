@@ -153,7 +153,7 @@ export default function PortfolioWorkspace({
                 onClick={() => setSelectedTheme(theme.id)}
                 className={`rounded-card border bg-ascend-surface p-5 flex flex-col justify-between h-72 cursor-pointer transition-all duration-300 relative overflow-hidden group shadow-md ${
                   isSelected
-                    ? "border-ascend-primary shadow-[0_0_20px_rgba(245,179,1,0.08)] bg-gradient-to-b from-[#111113] to-[#161619]"
+                    ? "border-ascend-primary shadow-[0_0_20px_rgba(245,179,1,0.08)] bg-linear-to-b from-[#111113] to-[#161619]"
                     : "border-ascend-border hover:border-ascend-border hover:bg-[#131316]"
                 }`}
               >

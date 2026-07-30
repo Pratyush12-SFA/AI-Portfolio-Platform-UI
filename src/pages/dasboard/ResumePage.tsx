@@ -29,13 +29,8 @@ export default function ResumePage() {
 
   const handleUpsertItem = async (type: string, data: Record<string, unknown>) => {
     try {
-      const res: any = await upsertResumeMutation.mutateAsync({ type, data });
-      if (res.success) {
-        addToast("success", "Saved successfully!");
-      } else {
-        addToast("error", "Save failed.");
-        throw new Error();
-      }
+      await upsertResumeMutation.mutateAsync({ type, data });
+      addToast("success", "Saved successfully!");
     } catch {
       addToast("error", "Save failed.");
       throw new Error();
@@ -46,12 +41,8 @@ export default function ResumePage() {
     if (id === undefined) return;
     if (!confirm("Are you sure you want to delete this item?")) return;
     try {
-      const res: any = await deleteResumeMutation.mutateAsync({ type, id });
-      if (res.success) {
-        addToast("success", "Deleted successfully!");
-      } else {
-        addToast("error", "Delete failed.");
-      }
+      await deleteResumeMutation.mutateAsync({ type, id });
+      addToast("success", "Deleted successfully!");
     } catch {
       addToast("error", "Delete failed.");
     }

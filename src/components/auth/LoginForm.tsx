@@ -35,7 +35,7 @@ export default function LoginForm() {
         password: data.password,
         rememberMe: data.rememberMe ?? false,
       });
-      auth.login(response.accessToken);
+      auth.login(response.AccessToken);
       navigate("/dashboard");
     } catch {
       setServerError("Invalid email or password. Please try again.");
@@ -48,19 +48,19 @@ export default function LoginForm() {
     <div className="w-full max-w-md">
       {/* Header */}
       <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-full mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-          <span className="text-[11px] font-semibold text-blue-600 tracking-wide">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-ascend-primary-light border border-ascend-primary/20 rounded-full mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-ascend-primary" />
+          <span className="text-[11px] font-semibold text-ascend-primary tracking-wide">
             Welcome back
           </span>
         </div>
         <h2
-          className="text-3xl font-bold text-gray-900 tracking-tight"
+          className="text-3xl font-bold text-ascend-text-primary tracking-tight"
           style={{ fontFamily: "var(--font-display)" }}
         >
           Sign in to Ascend
         </h2>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-ascend-text-muted">
           Your AI career OS is ready for you.
         </p>
       </div>
@@ -68,7 +68,7 @@ export default function LoginForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Email */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label className="mb-1.5 block text-sm font-medium text-ascend-text-secondary">
             Email
           </label>
           <input
@@ -78,13 +78,13 @@ export default function LoginForm() {
             className="input-light w-full px-4 py-3 text-sm"
           />
           {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            <p className="mt-1 text-sm text-ascend-danger">{errors.email.message}</p>
           )}
         </div>
 
         {/* Password */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label className="mb-1.5 block text-sm font-medium text-ascend-text-secondary">
             Password
           </label>
           <div className="relative">
@@ -97,7 +97,7 @@ export default function LoginForm() {
             <button
               type="button"
               onClick={() => setShowPassword((p) => !p)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-ascend-text-muted hover:text-ascend-text-secondary p-1"
             >
               {showPassword ? (
                 <EyeOff className="w-4 h-4" />
@@ -121,14 +121,14 @@ export default function LoginForm() {
               {...register("rememberMe")}
               className="w-4 h-4 accent-[#0052FF] rounded"
             />
-            <span className="text-sm text-gray-500 select-none group-hover:text-gray-700">
+            <span className="text-sm text-ascend-text-muted select-none group-hover:text-ascend-text-secondary">
               Remember me
             </span>
           </label>
           <button
             type="button"
             onClick={() => navigate("/forgot-password")}
-            className="text-sm font-medium text-[#0052FF] hover:text-[#0040CC] transition-colors"
+            className="text-sm font-medium text-ascend-primary hover:text-ascend-primary-hover transition-colors"
           >
             Forgot password?
           </button>
@@ -136,8 +136,8 @@ export default function LoginForm() {
 
         {/* Server Error */}
         {serverError && (
-          <div className="px-3 py-2.5 bg-red-50 border border-red-100 rounded-lg">
-            <p className="text-sm text-red-600">{serverError}</p>
+          <div className="px-3 py-2.5 bg-ascend-danger-light border border-ascend-danger/20 rounded-lg">
+            <p className="text-sm text-ascend-danger">{serverError}</p>
           </div>
         )}
 
@@ -164,9 +164,9 @@ export default function LoginForm() {
         {hasGoogleClient && (
           <>
             <div className="flex items-center gap-3 py-1">
-              <div className="h-px flex-1 bg-gray-200" />
-              <span className="text-xs text-gray-400 font-medium">or</span>
-              <div className="h-px flex-1 bg-gray-200" />
+              <div className="h-px flex-1 bg-ascend-border" />
+              <span className="text-xs text-ascend-text-muted font-medium">or</span>
+              <div className="h-px flex-1 bg-ascend-border" />
             </div>
 
             <div className="w-full flex justify-center">
@@ -177,8 +177,8 @@ export default function LoginForm() {
                     const response = await googleLoginUser(
                       credentialResponse.credential
                     );
-                    if (response && response.accessToken) {
-                      auth.login(response.accessToken);
+                    if (response && response.AccessToken) {
+                      auth.login(response.AccessToken);
                       navigate("/dashboard");
                     } else {
                       setServerError(
@@ -200,12 +200,12 @@ export default function LoginForm() {
         )}
       </form>
 
-      <p className="mt-8 text-center text-sm text-gray-500">
+      <p className="mt-8 text-center text-sm text-ascend-text-muted">
         Don&apos;t have an account?{" "}
         <button
           type="button"
           onClick={() => navigate("/register")}
-          className="font-semibold text-[#0052FF] hover:text-[#0040CC] transition-colors"
+          className="font-semibold text-ascend-primary hover:text-ascend-primary-hover transition-colors"
         >
           Create Account
         </button>

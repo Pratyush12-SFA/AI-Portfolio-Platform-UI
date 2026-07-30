@@ -21,6 +21,28 @@ import {
 } from "../../../services/ai.service";
 import { useToast } from "../../../contexts/ToastContext";
 
+function formatDate(dateStr: string | undefined | null): string {
+  if (!dateStr) return "";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("en-US", { year: "numeric", month: "short" });
+  } catch {
+    return dateStr;
+  }
+}
+
+function toDateInputValue(dateStr: string | undefined | null): string {
+  if (!dateStr) return "";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
+    return d.toISOString().split("T")[0];
+  } catch {
+    return "";
+  }
+}
+
 interface ResumeWorkspaceProps {
   educations: Portfolio.Education[];
   experiences: Portfolio.Experience[];
@@ -288,7 +310,7 @@ export default function ResumeWorkspace({
               className={`pb-3 px-4 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
                 activeSubTab === tab.id
                   ? "border-ascend-primary text-ascend-primary"
-                  : "border-transparent text-ascend-text-secondary hover:text-zinc-200"
+                  : "border-transparent text-ascend-text-secondary hover:text-ascend-text-primary"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -317,7 +339,7 @@ export default function ResumeWorkspace({
         <div className="space-y-4">
           <div className="flex justify-between items-center no-print px-1">
             <div>
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <h3 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                 Live Resume Preview
               </h3>
               <p className="text-[10px] text-ascend-text-secondary font-light">
@@ -326,7 +348,7 @@ export default function ResumeWorkspace({
             </div>
             <button
               onClick={() => window.print()}
-              className="px-4 py-2 bg-gradient-to-r from-ascend-primary to-ascend-ai hover:from-[#F5B301] hover:to-[#C08500] text-black text-xs font-black rounded-button flex items-center gap-1.5 shadow-lg transition-all"
+              className="px-4 py-2 bg-gradient-to-r from-ascend-primary to-ascend-ai hover:from-ascend-primary-hover hover:to-ascend-primary-mid text-white text-xs font-black rounded-button flex items-center gap-1.5 shadow-lg transition-all"
             >
               <span>Print / Export PDF</span>
             </button>
@@ -366,9 +388,9 @@ export default function ResumeWorkspace({
             }
           `}} />
 
-          <div className="resume-preview-container w-full max-w-[820px] mx-auto bg-white text-black rounded-card shadow-2xl border border-zinc-200 overflow-hidden flex flex-col font-sans select-text">
-            <div className="bg-[#2B3545] text-white py-8 px-10 flex flex-col items-center md:items-end justify-center text-center md:text-right relative">
-              <div className="absolute left-10 -bottom-8 w-24 h-24 rounded-full bg-zinc-200 border-4 border-white overflow-hidden shadow-lg hidden md:block">
+          <div className="resume-preview-container w-full max-w-[820px] mx-auto bg-ascend-surface text-ascend-text-primary rounded-card shadow-2xl border border-ascend-border overflow-hidden flex flex-col font-sans select-text">
+            <div className="bg-ascend-text-primary text-white py-8 px-10 flex flex-col items-center md:items-end justify-center text-center md:text-right relative">
+              <div className="absolute left-10 -bottom-8 w-24 h-24 rounded-full bg-ascend-surface-elevated border-4 border-white overflow-hidden shadow-lg hidden md:block">
                 <img 
                   src={profile?.ProfilePictureUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"} 
                   alt="Avatar" 
@@ -378,35 +400,35 @@ export default function ResumeWorkspace({
               <h1 className="text-3xl font-extrabold tracking-wide uppercase">
                 {profile?.FullName || "Riya Sharma"}
               </h1>
-              <p className="text-sm font-semibold tracking-wider text-zinc-300 mt-1 uppercase">
+              <p className="text-sm font-semibold tracking-wider text-white/70 mt-1 uppercase">
                 {profile?.Headline || "Computer Science Graduate"}
               </p>
             </div>
 
             <div className="flex-1 grid grid-cols-1 md:grid-cols-[1fr_2fr]">
-              <div className="bg-[#E9EBEE] p-8 space-y-8 border-r border-zinc-300">
+              <div className="bg-ascend-surface-elevated p-8 space-y-8 border-r border-ascend-border">
                 <div className="h-10 hidden md:block" />
 
                 <div className="space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] border-b-2 border-zinc-400 pb-1.5">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary border-b-2 border-ascend-border pb-1.5">
                     Contact
                   </h3>
-                  <ul className="space-y-2 text-[11px] text-zinc-700 leading-relaxed font-medium">
+                  <ul className="space-y-2 text-[11px] text-ascend-text-secondary leading-relaxed font-medium">
                     <li className="flex items-center gap-2">
-                      <span className="font-bold text-[#2B3545]">📞</span>
+                      <span className="font-bold text-ascend-text-primary">📞</span>
                       <span>{profile?.PhoneNumber || "+91-98765432XX"}</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="font-bold text-[#2B3545]">✉️</span>
+                      <span className="font-bold text-ascend-text-primary">✉️</span>
                       <span className="break-all">{profile?.ContactEmail || "riya.sharma@email.com"}</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="font-bold text-[#2B3545]">📍</span>
+                      <span className="font-bold text-ascend-text-primary">📍</span>
                       <span>{profile?.Address || "Location (City, State)"}</span>
                     </li>
                     {socialLinks && socialLinks.length > 0 && (
                       <li className="flex items-center gap-2">
-                        <span className="font-bold text-[#2B3545]">🔗</span>
+                        <span className="font-bold text-ascend-text-primary">🔗</span>
                         <span className="break-all">{socialLinks[0].Url.replace("https://", "")}</span>
                       </li>
                     )}
@@ -415,14 +437,14 @@ export default function ResumeWorkspace({
 
                 {certifications && certifications.length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] border-b-2 border-zinc-400 pb-1.5">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary border-b-2 border-ascend-border pb-1.5">
                       Certifications
                     </h3>
-                    <ul className="list-disc pl-4 space-y-2 text-[11px] text-zinc-700 font-medium">
+                    <ul className="list-disc pl-4 space-y-2 text-[11px] text-ascend-text-secondary font-medium">
                       {certifications.map((cert) => (
                         <li key={cert.Id}>
-                          <span className="font-bold text-zinc-900">{cert.Name}</span>
-                          {cert.Issuer && <span className="text-[10px] block text-zinc-500">({cert.Issuer})</span>}
+                          <span className="font-bold text-ascend-text-primary">{cert.Name}</span>
+                          {cert.Issuer && <span className="text-[10px] block text-ascend-text-muted">({cert.Issuer})</span>}
                         </li>
                       ))}
                     </ul>
@@ -431,13 +453,13 @@ export default function ResumeWorkspace({
 
                 {languages && languages.length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] border-b-2 border-zinc-400 pb-1.5">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary border-b-2 border-ascend-border pb-1.5">
                       Languages
                     </h3>
-                    <ul className="list-disc pl-4 space-y-1.5 text-[11px] text-zinc-700 font-medium">
+                    <ul className="list-disc pl-4 space-y-1.5 text-[11px] text-ascend-text-secondary font-medium">
                       {languages.map((lang) => (
                         <li key={lang.Id}>
-                          {lang.Name} {lang.ProficiencyLevel && <span className="text-zinc-500 font-normal">({lang.ProficiencyLevel})</span>}
+                          {lang.Name} {lang.ProficiencyLevel && <span className="text-ascend-text-muted font-normal">({lang.ProficiencyLevel})</span>}
                         </li>
                       ))}
                     </ul>
@@ -445,28 +467,28 @@ export default function ResumeWorkspace({
                 )}
               </div>
 
-              <div className="p-8 space-y-8 bg-white">
-                <div className="relative pl-6 border-l border-zinc-200">
-                  <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#2B3545] border border-white" />
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] mb-2 flex items-center gap-2">
+              <div className="p-8 space-y-8 bg-ascend-surface">
+                <div className="relative pl-6 border-l border-ascend-border">
+                  <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary mb-2 flex items-center gap-2">
                     Career Objective
                   </h3>
-                  <p className="text-[11px] text-zinc-700 leading-relaxed font-light select-text">
+                  <p className="text-[11px] text-ascend-text-secondary leading-relaxed font-light select-text">
                     {profile?.Summary || "Motivated Computer Science graduate eager to apply programming and analytical skills in a dynamic organization."}
                   </p>
                 </div>
 
                 {skills && skills.length > 0 && (
-                  <div className="relative pl-6 border-l border-zinc-200">
-                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#2B3545] border border-white" />
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] mb-3 flex items-center gap-2">
+                  <div className="relative pl-6 border-l border-ascend-border">
+                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary mb-3 flex items-center gap-2">
                       Key Skills
                     </h3>
-                    <ul className="list-disc pl-4 space-y-1.5 text-[11px] text-zinc-700 font-medium">
+                    <ul className="list-disc pl-4 space-y-1.5 text-[11px] text-ascend-text-secondary font-medium">
                       {skills.map((skill) => (
                         <li key={skill.Id}>
                           {skill.Category ? (
-                            <span><strong className="text-zinc-900">{skill.Category}:</strong> {skill.Name}</span>
+                            <span><strong className="text-ascend-text-primary">{skill.Category}:</strong> {skill.Name}</span>
                           ) : (
                             <span>{skill.Name}</span>
                           )}
@@ -477,23 +499,23 @@ export default function ResumeWorkspace({
                 )}
 
                 {educations && educations.length > 0 && (
-                  <div className="relative pl-6 border-l border-zinc-200">
-                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#2B3545] border border-white" />
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] mb-3 flex items-center gap-2">
+                  <div className="relative pl-6 border-l border-ascend-border">
+                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary mb-3 flex items-center gap-2">
                       Education
                     </h3>
                     <div className="space-y-4">
                       {educations.map((edu) => (
                         <div key={edu.Id} className="space-y-1 text-[11px]">
-                          <div className="flex justify-between font-bold text-zinc-900">
+                          <div className="flex justify-between font-bold text-ascend-text-primary">
                             <span>{edu.Degree} {edu.FieldOfStudy && `in ${edu.FieldOfStudy}`}</span>
-                            <span className="text-[#2B3545] text-[10px] font-normal">
-                              {new Date(edu.StartDate).getFullYear()} - {edu.EndDate ? new Date(edu.EndDate).getFullYear() : "Present"}
+                            <span className="text-ascend-text-muted text-[10px] font-normal">
+                              {formatDate(edu.StartDate)} - {edu.IsCurrent ? "Present" : formatDate(edu.EndDate) || "Present"}
                             </span>
                           </div>
-                          <div className="text-zinc-700 font-semibold">{edu.Institution}</div>
-                          {edu.Grade && <div className="text-zinc-500 text-[10px]">{edu.Grade}</div>}
-                          {edu.Description && <div className="text-zinc-600 font-light mt-1 text-[10px]">{edu.Description}</div>}
+                          <div className="text-ascend-text-secondary font-semibold">{edu.Institution}</div>
+                          {edu.Grade && <div className="text-ascend-text-muted text-[10px]">{edu.Grade}</div>}
+                          {edu.Description && <div className="text-ascend-text-muted font-light mt-1 text-[10px]">{edu.Description}</div>}
                         </div>
                       ))}
                     </div>
@@ -501,31 +523,31 @@ export default function ResumeWorkspace({
                 )}
 
                 {((projects && projects.length > 0) || (experiences && experiences.length > 0)) && (
-                  <div className="relative pl-6 border-l border-zinc-200">
-                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#2B3545] border border-white" />
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#2B3545] mb-3 flex items-center gap-2">
+                  <div className="relative pl-6 border-l border-ascend-border">
+                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary mb-3 flex items-center gap-2">
                       Projects & Experience
                     </h3>
                     <div className="space-y-4">
                       {experiences.map((exp) => (
                         <div key={exp.Id} className="space-y-1 text-[11px]">
-                          <div className="flex justify-between font-bold text-zinc-900">
+                          <div className="flex justify-between font-bold text-ascend-text-primary">
                             <span>{exp.Position} at {exp.Company || exp.CompanyName}</span>
-                            <span className="text-[#2B3545] text-[10px] font-normal">
-                              {new Date(exp.StartDate).getFullYear()} - {exp.IsCurrent ? "Present" : exp.EndDate ? new Date(exp.EndDate).getFullYear() : ""}
+                            <span className="text-ascend-text-muted text-[10px] font-normal">
+                              {formatDate(exp.StartDate)} - {exp.IsCurrent ? "Present" : formatDate(exp.EndDate) || ""}
                             </span>
                           </div>
-                          {exp.Location && <div className="text-zinc-500 text-[10px]">{exp.Location}</div>}
-                          {exp.Description && <p className="text-zinc-600 font-light mt-1 text-[10px] whitespace-pre-line">{exp.Description}</p>}
+                          {exp.Location && <div className="text-ascend-text-muted text-[10px]">{exp.Location}</div>}
+                          {exp.Description && <p className="text-ascend-text-muted font-light mt-1 text-[10px] whitespace-pre-line">{exp.Description}</p>}
                         </div>
                       ))}
                       {projects.map((proj) => (
                         <div key={proj.Id} className="space-y-1 text-[11px]">
-                          <div className="flex justify-between font-bold text-zinc-900">
+                          <div className="flex justify-between font-bold text-ascend-text-primary">
                             <span>{proj.Title}</span>
-                            {proj.TechStack && <span className="text-[#2B3545] text-[10px] font-normal">({proj.TechStack})</span>}
+                            {proj.TechStack && <span className="text-ascend-text-muted text-[10px] font-normal">({proj.TechStack})</span>}
                           </div>
-                          {proj.Description && <p className="text-zinc-600 font-light mt-1 text-[10px]">{proj.Description}</p>}
+                          {proj.Description && <p className="text-ascend-text-muted font-light mt-1 text-[10px]">{proj.Description}</p>}
                         </div>
                       ))}
                     </div>
@@ -544,7 +566,7 @@ export default function ResumeWorkspace({
         <div className="p-6 rounded-card bg-ascend-surface border border-ascend-border space-y-4 shadow-xl">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <h3 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                 Professional Bio Summary
               </h3>
               <p className="text-[10px] text-ascend-text-secondary font-light mt-0.5">
@@ -559,7 +581,7 @@ export default function ResumeWorkspace({
                   setSummaryText(profile?.Summary || "");
                   setIsEditingSummary(true);
                 }}
-                className="px-3 py-1.5 rounded-lg border border-ascend-border bg-white/5 hover:border-white/15 text-xs text-white flex items-center gap-1.5 transition-all"
+                className="px-3 py-1.5 rounded-lg border border-ascend-border bg-ascend-surface-elevated hover:border-ascend-primary/30 text-xs text-ascend-text-primary flex items-center gap-1.5 transition-all"
               >
                 <Edit2 className="w-3.5 h-3.5" />
                 <span>Edit Bio</span>
@@ -591,43 +613,43 @@ export default function ResumeWorkspace({
                   value={summaryText}
                   onChange={(e) => setSummaryText(e.target.value)}
                   placeholder="Draft your professional story or use the AI tools below to generate one from your current job history and skills..."
-                  className="w-full p-4 bg-black/40 border border-ascend-border rounded-xl text-xs text-zinc-150 focus:outline-none focus:border-ascend-primary transition-colors resize-none font-sans"
+                  className="w-full p-4 bg-ascend-surface border border-ascend-border rounded-xl text-xs text-ascend-text-primary focus:outline-none focus:border-ascend-primary transition-colors resize-none font-sans"
                 />
 
                 {/* AI SUMMARY TOOLBAR */}
-                <div className="flex flex-wrap items-center gap-2 p-2 bg-black/20 border border-ascend-border rounded-button">
+                <div className="flex flex-wrap items-center gap-2 p-2 bg-ascend-surface-elevated border border-ascend-border rounded-button">
                   <span className="text-[9px] font-bold text-ascend-text-muted uppercase tracking-widest px-2">
                     AI Tools:
                   </span>
                   <button
                     onClick={() => handleAISummaryAction("generate")}
-                    className="px-2.5 py-1 text-[10px] bg-ascend-ai/15 hover:bg-ascend-ai/25 border border-ascend-ai/30 rounded-lg text-white flex items-center gap-1 font-medium transition-all"
+                    className="px-2.5 py-1 text-[10px] bg-ascend-ai/15 hover:bg-ascend-ai/25 border border-ascend-ai/30 rounded-lg text-ascend-text-primary flex items-center gap-1 font-medium transition-all"
                   >
                     <Sparkles className="w-3 h-3" />
                     <span>✨ Auto-Generate</span>
                   </button>
                   <button
                     onClick={() => handleAISummaryAction("improve")}
-                    className="px-2.5 py-1 text-[10px] bg-white/5 hover:bg-white/10 border border-ascend-border rounded-lg text-white flex items-center gap-1 font-medium transition-all"
+                    className="px-2.5 py-1 text-[10px] bg-ascend-surface-elevated hover:bg-ascend-primary-light border border-ascend-border rounded-lg text-ascend-text-primary flex items-center gap-1 font-medium transition-all"
                   >
                     <span>✨ Improve Flow</span>
                   </button>
                   <button
                     onClick={() => handleAISummaryAction("expand")}
-                    className="px-2.5 py-1 text-[10px] bg-white/5 hover:bg-white/10 border border-ascend-border rounded-lg text-white flex items-center gap-1 font-medium transition-all"
+                    className="px-2.5 py-1 text-[10px] bg-ascend-surface-elevated hover:bg-ascend-primary-light border border-ascend-border rounded-lg text-ascend-text-primary flex items-center gap-1 font-medium transition-all"
                   >
                     <span>✨ Expand Detail</span>
                   </button>
                   <button
                     onClick={() => handleAISummaryAction("tone")}
-                    className="px-2.5 py-1 text-[10px] bg-white/5 hover:bg-white/10 border border-ascend-border rounded-lg text-white flex items-center gap-1 font-medium transition-all"
+                    className="px-2.5 py-1 text-[10px] bg-ascend-surface-elevated hover:bg-ascend-primary-light border border-ascend-border rounded-lg text-ascend-text-primary flex items-center gap-1 font-medium transition-all"
                   >
                     <span>✨ Executive Tone</span>
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="p-4 rounded-button bg-black/20 border border-ascend-border text-xs text-ascend-text-secondary font-light leading-relaxed italic select-text">
+              <div className="p-4 rounded-button bg-ascend-surface-elevated border border-ascend-border text-xs text-ascend-text-secondary font-light leading-relaxed italic select-text">
                 {profile?.Summary
                   ? `"${profile.Summary}"`
                   : "No summary drafted yet. Click 'Edit Bio' above to begin building your elevator pitch."}
@@ -642,7 +664,7 @@ export default function ResumeWorkspace({
         <div className="space-y-4">
           <div className="flex justify-between items-center px-1">
             <div>
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <h3 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                 Work History
               </h3>
               <p className="text-[10px] text-ascend-text-secondary font-light">
@@ -673,14 +695,14 @@ export default function ResumeWorkspace({
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="text-sm font-bold text-white tracking-wide">
+                      <h4 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                         {exp.Position}
                       </h4>
                       <span className="text-xs text-ascend-primary font-medium">
                         {exp.Company}
                       </span>
                       <span className="text-[10px] text-ascend-text-muted block mt-0.5">
-                        {exp.StartDate} - {exp.EndDate || "Present"} |{" "}
+                        {formatDate(exp.StartDate)} - {exp.IsCurrent ? "Present" : formatDate(exp.EndDate) || "Present"} |{" "}
                         {exp.Location || "Remote"}
                       </span>
                     </div>
@@ -711,17 +733,17 @@ export default function ResumeWorkspace({
                   <div className="flex gap-2 border-t border-ascend-border pt-3">
                     <button
                       onClick={() => handleAIExperienceOptimize(exp, "rewrite")}
-                      className="px-2.5 py-1 text-[10px] bg-white/5 hover:bg-white/10 border border-ascend-border text-white rounded-lg flex items-center gap-1 transition-all"
+                      className="px-2.5 py-1 text-[10px] bg-ascend-surface-elevated hover:bg-ascend-primary-light border border-ascend-border text-ascend-text-primary rounded-lg flex items-center gap-1 transition-all"
                     >
                       <Sparkles className="w-3 h-3 text-ascend-primary" />
-                      <span>✨ AI Rewrite</span>
+                      <span>AI Rewrite</span>
                     </button>
                     <button
                       onClick={() => handleAIExperienceOptimize(exp, "star")}
-                      className="px-2.5 py-1 text-[10px] bg-ascend-ai/10 hover:bg-ascend-ai/20 border border-ascend-ai/20 text-white rounded-lg flex items-center gap-1 transition-all"
+                      className="px-2.5 py-1 text-[10px] bg-ascend-ai/10 hover:bg-ascend-ai/20 border border-ascend-ai/20 text-ascend-text-primary rounded-lg flex items-center gap-1 transition-all"
                     >
-                      <Sparkles className="w-3 h-3" />
-                      <span>✨ STAR Format</span>
+                      <Sparkles className="w-3 h-3 text-ascend-ai" />
+                      <span>STAR Format</span>
                     </button>
                   </div>
                 </div>
@@ -736,7 +758,7 @@ export default function ResumeWorkspace({
         <div className="space-y-4">
           <div className="flex justify-between items-center px-1">
             <div>
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <h3 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                 Featured Projects
               </h3>
               <p className="text-[10px] text-ascend-text-secondary font-light">
@@ -767,7 +789,7 @@ export default function ResumeWorkspace({
                   <div className="space-y-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="text-sm font-bold text-white tracking-wide">
+                        <h4 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                           {proj.Title}
                         </h4>
                         {proj.Technologies && (
@@ -802,15 +824,15 @@ export default function ResumeWorkspace({
                   <div className="flex gap-2 border-t border-ascend-border pt-3 mt-4">
                     <button
                       onClick={() => handleAIProjectOptimize(proj, "improve")}
-                      className="px-2 py-1 text-[10px] bg-white/5 hover:bg-white/10 border border-ascend-border text-white rounded-lg flex items-center gap-1 transition-all"
+                      className="px-2 py-1 text-[10px] bg-ascend-surface-elevated hover:bg-ascend-primary-light border border-ascend-border text-ascend-text-primary rounded-lg flex items-center gap-1 transition-all"
                     >
-                      <span>✨ Improve</span>
+                      <span>Improve</span>
                     </button>
                     <button
                       onClick={() => handleAIProjectOptimize(proj, "metrics")}
-                      className="px-2 py-1 text-[10px] bg-ascend-ai/10 hover:bg-ascend-ai/20 border border-ascend-ai/20 text-white rounded-lg flex items-center gap-1 transition-all"
+                      className="px-2 py-1 text-[10px] bg-ascend-ai/10 hover:bg-ascend-ai/20 border border-ascend-ai/20 text-ascend-text-primary rounded-lg flex items-center gap-1 transition-all"
                     >
-                      <span>✨ Highlight Impact</span>
+                      <span>Highlight Impact</span>
                     </button>
                   </div>
                 </div>
@@ -824,7 +846,7 @@ export default function ResumeWorkspace({
       {activeSubTab === "skills" && (
         <div className="space-y-6">
           <div className="p-6 rounded-card bg-ascend-surface border border-ascend-border space-y-4 shadow-xl">
-            <h3 className="text-sm font-bold text-white tracking-wide">
+            <h3 className="text-sm font-bold text-ascend-text-primary tracking-wide">
               Skills Inventory
             </h3>
 
@@ -846,7 +868,7 @@ export default function ResumeWorkspace({
                     }
                   }
                 }}
-                className="flex-1 rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                className="flex-1 rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
               />
               <button
                 onClick={async () => {
@@ -879,7 +901,7 @@ export default function ResumeWorkspace({
                 skills.map((sk) => (
                   <span
                     key={sk.Id}
-                    className="px-3 py-1.5 text-xs bg-white/5 border border-ascend-border text-white rounded-button flex items-center gap-1.5 hover:border-red-500/30 group"
+                    className="px-3 py-1.5 text-xs bg-ascend-surface-elevated border border-ascend-border text-ascend-text-secondary rounded-button flex items-center gap-1.5 hover:border-red-500/30 group"
                   >
                     <span>{sk.Name}</span>
                     <button
@@ -896,10 +918,10 @@ export default function ResumeWorkspace({
           </div>
 
           {/* AI SUGGEST MATRIX */}
-          <div className="p-6 rounded-card bg-gradient-to-br from-[#7C3AED]/10 via-[#111113] to-[#111113] border border-ascend-ai/20 space-y-4 shadow-xl">
+          <div className="p-6 rounded-card bg-ascend-surface-elevated border border-ascend-border space-y-4">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4.5 h-4.5 text-white" />
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+              <Sparkles className="w-4.5 h-4.5 text-ascend-primary" />
+              <h3 className="text-xs font-bold text-ascend-text-primary uppercase tracking-wider">
                 AI Skill Recommender
               </h3>
             </div>
@@ -915,12 +937,12 @@ export default function ResumeWorkspace({
                 placeholder="Target Job Title (e.g. Fullstack Engineer)..."
                 value={targetRole}
                 onChange={(e) => setTargetRole(e.target.value)}
-                className="flex-1 rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-ai"
+                className="flex-1 rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-ai"
               />
               <button
                 onClick={handleGetSuggestedSkills}
                 disabled={loadingSuggestions || !targetRole.trim()}
-                className="px-4 py-2 rounded-button bg-ascend-ai hover:bg-[#6D28D9] disabled:bg-zinc-800 text-white text-xs font-bold transition-all flex items-center gap-1"
+                className="px-4 py-2 rounded-button bg-ascend-ai hover:bg-ascend-ai/80 disabled:bg-ascend-surface-elevated text-white text-xs font-bold transition-all flex items-center gap-1"
               >
                 {loadingSuggestions ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -940,7 +962,7 @@ export default function ResumeWorkspace({
                     <button
                       key={i}
                       onClick={() => handleAddSuggestedSkill(skName)}
-                      className="px-2.5 py-1.5 text-[11px] bg-ascend-ai/10 hover:bg-ascend-ai/20 border border-ascend-ai/30 text-white rounded-xl flex items-center gap-1.5 transition-all"
+                      className="px-2.5 py-1.5 text-[11px] bg-ascend-ai/10 hover:bg-ascend-ai/20 border border-ascend-ai/30 text-ascend-text-primary rounded-xl flex items-center gap-1.5 transition-all"
                     >
                       <Plus className="w-3 h-3" />
                       <span>{skName}</span>
@@ -959,7 +981,7 @@ export default function ResumeWorkspace({
           {/* Education */}
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <h3 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                 Academic Education
               </h3>
               <button
@@ -979,10 +1001,10 @@ export default function ResumeWorkspace({
                 educations.map((edu) => (
                   <div
                     key={edu.Id}
-                    className="p-4 rounded-button bg-black/20 border border-ascend-border space-y-1 relative group"
+                    className="p-4 rounded-button bg-ascend-surface-elevated border border-ascend-border space-y-1 relative group"
                   >
                     <div className="flex justify-between items-start">
-                      <h4 className="text-xs font-bold text-white">
+                      <h4 className="text-xs font-bold text-ascend-text-primary">
                         {edu.Degree}
                       </h4>
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1003,8 +1025,8 @@ export default function ResumeWorkspace({
                     <p className="text-[11px] text-ascend-primary font-medium">
                       {edu.Institution}
                     </p>
-                    <p className="text-[10px] text-zinc-550">
-                      {edu.StartDate} - {edu.EndDate || "Present"} | Grade:{" "}
+                    <p className="text-[10px] text-ascend-text-muted">
+                      {formatDate(edu.StartDate)} - {edu.IsCurrent ? "Present" : formatDate(edu.EndDate) || "Present"} | Grade:{" "}
                       {edu.Grade || "N/A"}
                     </p>
                   </div>
@@ -1016,7 +1038,7 @@ export default function ResumeWorkspace({
           {/* Certifications */}
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <h3 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                 Certifications
               </h3>
               <button
@@ -1036,10 +1058,10 @@ export default function ResumeWorkspace({
                 certifications.map((cert) => (
                   <div
                     key={cert.Id}
-                    className="p-4 rounded-button bg-black/20 border border-ascend-border space-y-1 relative group"
+                    className="p-4 rounded-button bg-ascend-surface-elevated border border-ascend-border space-y-1 relative group"
                   >
                     <div className="flex justify-between items-start">
-                      <h4 className="text-xs font-bold text-white">
+                      <h4 className="text-xs font-bold text-ascend-text-primary">
                         {cert.Name}
                       </h4>
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1062,8 +1084,8 @@ export default function ResumeWorkspace({
                     <p className="text-[11px] text-ascend-primary font-medium">
                       {cert.Issuer}
                     </p>
-                    <p className="text-[10px] text-zinc-550">
-                      Issued: {cert.IssueDate || "N/A"}
+                    <p className="text-[10px] text-ascend-text-muted">
+                      Issued: {formatDate(cert.IssueDate) || "N/A"}
                     </p>
                   </div>
                 ))
@@ -1079,7 +1101,7 @@ export default function ResumeWorkspace({
           {/* Languages */}
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <h3 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                 Languages
               </h3>
               <button
@@ -1094,10 +1116,10 @@ export default function ResumeWorkspace({
               {languages.map((lang) => (
                 <div
                   key={lang.Id}
-                  className="px-3 py-2 rounded-button bg-black/20 border border-ascend-border flex justify-between items-center group"
+                  className="px-3 py-2 rounded-button bg-ascend-surface-elevated border border-ascend-border flex justify-between items-center group"
                 >
                   <div>
-                    <span className="text-xs font-bold text-white">
+                    <span className="text-xs font-bold text-ascend-text-primary">
                       {lang.Name}
                     </span>
                     <span className="text-[10px] text-ascend-text-muted block">
@@ -1118,7 +1140,7 @@ export default function ResumeWorkspace({
           {/* Social Links */}
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <h3 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                 Social Links
               </h3>
               <button
@@ -1133,10 +1155,10 @@ export default function ResumeWorkspace({
               {socialLinks.map((link) => (
                 <div
                   key={link.Id}
-                  className="px-3 py-2 rounded-button bg-black/20 border border-ascend-border flex justify-between items-center group"
+                  className="px-3 py-2 rounded-button bg-ascend-surface-elevated border border-ascend-border flex justify-between items-center group"
                 >
                   <div className="overflow-hidden mr-2">
-                    <span className="text-xs font-bold text-white block">
+                    <span className="text-xs font-bold text-ascend-text-primary block">
                       {link.Platform}
                     </span>
                     <span className="text-[9.5px] text-ascend-primary truncate block">
@@ -1157,7 +1179,7 @@ export default function ResumeWorkspace({
           {/* Custom Sections */}
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <h3 className="text-sm font-bold text-ascend-text-primary tracking-wide">
                 Custom Sections
               </h3>
               <button
@@ -1172,10 +1194,10 @@ export default function ResumeWorkspace({
               {customSections.map((sec) => (
                 <div
                   key={sec.Id}
-                  className="p-4 rounded-button bg-black/20 border border-ascend-border space-y-1 relative group"
+                  className="p-4 rounded-button bg-ascend-surface-elevated border border-ascend-border space-y-1 relative group"
                 >
                   <div className="flex justify-between items-start">
-                    <h4 className="text-xs font-bold text-white">
+                    <h4 className="text-xs font-bold text-ascend-text-primary">
                       {sec.Title}
                     </h4>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1208,7 +1230,7 @@ export default function ResumeWorkspace({
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 no-print animate-fadeIn">
           <div className="w-full max-w-lg bg-ascend-surface border border-ascend-border rounded-card shadow-2xl p-6 space-y-5">
             <div className="flex justify-between items-center border-b border-ascend-border pb-3">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              <h3 className="text-sm font-bold text-ascend-text-primary uppercase tracking-wider">
                 {modalItem.Id ? "Edit Item Details" : "Add New Item"}
               </h3>
               <button
@@ -1240,7 +1262,7 @@ export default function ResumeWorkspace({
                             Position: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="e.g. Senior Architect"
                       />
                     </div>
@@ -1257,7 +1279,7 @@ export default function ResumeWorkspace({
                             Company: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="e.g. Google"
                       />
                     </div>
@@ -1268,34 +1290,50 @@ export default function ResumeWorkspace({
                         Start Date
                       </label>
                       <input
-                        type="text"
-                        value={modalItem.StartDate || ""}
+                        type="date"
+                        value={toDateInputValue(modalItem.StartDate)}
                         onChange={(e) =>
                           setModalItem({
                             ...modalItem,
                             StartDate: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
-                        placeholder="e.g. Jan 2024"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       />
                     </div>
                     <div>
                       <label className="block text-[10px] text-ascend-text-secondary mb-1.5 uppercase font-semibold">
-                        End Date (or 'Present')
+                        End Date
                       </label>
                       <input
-                        type="text"
-                        value={modalItem.EndDate || ""}
+                        type="date"
+                        value={toDateInputValue(modalItem.EndDate)}
+                        disabled={modalItem.IsCurrent}
                         onChange={(e) =>
                           setModalItem({
                             ...modalItem,
                             EndDate: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
-                        placeholder="e.g. Present"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary disabled:opacity-40"
                       />
+                      <label className="flex items-center gap-2 mt-2">
+                        <input
+                          type="checkbox"
+                          checked={modalItem.IsCurrent || false}
+                          onChange={(e) =>
+                            setModalItem({
+                              ...modalItem,
+                              IsCurrent: e.target.checked,
+                              EndDate: e.target.checked ? null : modalItem.EndDate,
+                            })
+                          }
+                          className="rounded border-ascend-border bg-ascend-surface"
+                        />
+                        <span className="text-[10px] text-ascend-text-secondary">
+                          I currently work here
+                        </span>
+                      </label>
                     </div>
                   </div>
                   <div>
@@ -1308,7 +1346,7 @@ export default function ResumeWorkspace({
                       onChange={(e) =>
                         setModalItem({ ...modalItem, Location: e.target.value })
                       }
-                      className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                      className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       placeholder="e.g. San Francisco, CA"
                     />
                   </div>
@@ -1325,7 +1363,7 @@ export default function ResumeWorkspace({
                           Description: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border border-ascend-border bg-black/40 p-3 text-xs outline-none focus:border-ascend-primary resize-none font-sans"
+                      className="w-full rounded-xl border border-ascend-border bg-ascend-surface p-3 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary resize-none font-sans"
                       placeholder="List key outcomes, methodologies, and achievements..."
                     />
                   </div>
@@ -1346,7 +1384,7 @@ export default function ResumeWorkspace({
                         onChange={(e) =>
                           setModalItem({ ...modalItem, Title: e.target.value })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="Project title..."
                       />
                     </div>
@@ -1363,7 +1401,7 @@ export default function ResumeWorkspace({
                             Technologies: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="React, AWS, Node (comma separated)"
                       />
                     </div>
@@ -1382,7 +1420,7 @@ export default function ResumeWorkspace({
                             GithubUrl: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="https://github.com/..."
                       />
                     </div>
@@ -1399,7 +1437,7 @@ export default function ResumeWorkspace({
                             LiveDemoUrl: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="https://..."
                       />
                     </div>
@@ -1417,7 +1455,7 @@ export default function ResumeWorkspace({
                           ThumbnailUrl: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                      className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       placeholder="https://image-link.com/..."
                     />
                   </div>
@@ -1434,7 +1472,7 @@ export default function ResumeWorkspace({
                           Description: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border border-ascend-border bg-black/40 p-3 text-xs outline-none focus:border-ascend-primary resize-none font-sans"
+                      className="w-full rounded-xl border border-ascend-border bg-ascend-surface p-3 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary resize-none font-sans"
                       placeholder="Outline details, architecture choices, and metrics..."
                     />
                   </div>
@@ -1455,7 +1493,7 @@ export default function ResumeWorkspace({
                         onChange={(e) =>
                           setModalItem({ ...modalItem, Degree: e.target.value })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="e.g. Master of Science"
                       />
                     </div>
@@ -1472,7 +1510,7 @@ export default function ResumeWorkspace({
                             Institution: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="e.g. Stanford University"
                       />
                     </div>
@@ -1491,7 +1529,7 @@ export default function ResumeWorkspace({
                             FieldOfStudy: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="e.g. Computer Science"
                       />
                     </div>
@@ -1505,7 +1543,7 @@ export default function ResumeWorkspace({
                         onChange={(e) =>
                           setModalItem({ ...modalItem, Grade: e.target.value })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="e.g. 3.9 GPA"
                       />
                     </div>
@@ -1516,16 +1554,15 @@ export default function ResumeWorkspace({
                         Start Date
                       </label>
                       <input
-                        type="text"
-                        value={modalItem.StartDate || ""}
+                        type="date"
+                        value={toDateInputValue(modalItem.StartDate)}
                         onChange={(e) =>
                           setModalItem({
                             ...modalItem,
                             StartDate: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
-                        placeholder="e.g. Sep 2020"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       />
                     </div>
                     <div>
@@ -1533,17 +1570,34 @@ export default function ResumeWorkspace({
                         End Date
                       </label>
                       <input
-                        type="text"
-                        value={modalItem.EndDate || ""}
+                        type="date"
+                        value={toDateInputValue(modalItem.EndDate)}
+                        disabled={modalItem.IsCurrent}
                         onChange={(e) =>
                           setModalItem({
                             ...modalItem,
                             EndDate: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
-                        placeholder="e.g. Jun 2022"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary disabled:opacity-40"
                       />
+                      <label className="flex items-center gap-2 mt-2">
+                        <input
+                          type="checkbox"
+                          checked={modalItem.IsCurrent || false}
+                          onChange={(e) =>
+                            setModalItem({
+                              ...modalItem,
+                              IsCurrent: e.target.checked,
+                              EndDate: e.target.checked ? null : modalItem.EndDate,
+                            })
+                          }
+                          className="rounded border-ascend-border bg-ascend-surface"
+                        />
+                        <span className="text-[10px] text-ascend-text-secondary">
+                          Currently enrolled
+                        </span>
+                      </label>
                     </div>
                   </div>
                 </>
@@ -1563,7 +1617,7 @@ export default function ResumeWorkspace({
                         onChange={(e) =>
                           setModalItem({ ...modalItem, Name: e.target.value })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="e.g. AWS Solutions Architect"
                       />
                     </div>
@@ -1577,8 +1631,36 @@ export default function ResumeWorkspace({
                         onChange={(e) =>
                           setModalItem({ ...modalItem, Issuer: e.target.value })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="e.g. Amazon Web Services"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] text-ascend-text-secondary mb-1.5 uppercase font-semibold">
+                        Issue Date
+                      </label>
+                      <input
+                        type="date"
+                        value={toDateInputValue(modalItem.IssueDate)}
+                        onChange={(e) =>
+                          setModalItem({ ...modalItem, IssueDate: e.target.value })
+                        }
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-ascend-text-secondary mb-1.5 uppercase font-semibold">
+                        Expiration Date
+                      </label>
+                      <input
+                        type="date"
+                        value={toDateInputValue(modalItem.ExpirationDate)}
+                        onChange={(e) =>
+                          setModalItem({ ...modalItem, ExpirationDate: e.target.value })
+                        }
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       />
                     </div>
                   </div>
@@ -1596,7 +1678,7 @@ export default function ResumeWorkspace({
                             CredentialId: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="Optional ID"
                       />
                     </div>
@@ -1613,7 +1695,7 @@ export default function ResumeWorkspace({
                             CredentialUrl: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                        className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                         placeholder="Verify URL"
                       />
                     </div>
@@ -1634,7 +1716,7 @@ export default function ResumeWorkspace({
                       onChange={(e) =>
                         setModalItem({ ...modalItem, Name: e.target.value })
                       }
-                      className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                      className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       placeholder="e.g. Spanish"
                     />
                   </div>
@@ -1651,7 +1733,7 @@ export default function ResumeWorkspace({
                           Proficiency: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                      className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       placeholder="e.g. Native / Professional"
                     />
                   </div>
@@ -1671,7 +1753,7 @@ export default function ResumeWorkspace({
                       onChange={(e) =>
                         setModalItem({ ...modalItem, Platform: e.target.value })
                       }
-                      className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                      className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       placeholder="e.g. LinkedIn"
                     />
                   </div>
@@ -1685,7 +1767,7 @@ export default function ResumeWorkspace({
                       onChange={(e) =>
                         setModalItem({ ...modalItem, Url: e.target.value })
                       }
-                      className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                      className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       placeholder="https://..."
                     />
                   </div>
@@ -1705,7 +1787,7 @@ export default function ResumeWorkspace({
                       onChange={(e) =>
                         setModalItem({ ...modalItem, Title: e.target.value })
                       }
-                      className="w-full rounded-xl border border-ascend-border bg-black/40 px-3.5 py-2 text-xs outline-none focus:border-ascend-primary"
+                      className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       placeholder="e.g. Research Papers"
                     />
                   </div>
@@ -1719,7 +1801,7 @@ export default function ResumeWorkspace({
                       onChange={(e) =>
                         setModalItem({ ...modalItem, Content: e.target.value })
                       }
-                      className="w-full rounded-xl border border-ascend-border bg-black/40 p-3 text-xs outline-none focus:border-ascend-primary resize-none font-sans"
+                      className="w-full rounded-xl border border-ascend-border bg-ascend-surface p-3 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary resize-none font-sans"
                       placeholder="Enter custom structured content details..."
                     />
                   </div>
@@ -1755,7 +1837,7 @@ export default function ResumeWorkspace({
             <div className="flex justify-between items-center border-b border-ascend-border pb-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-ascend-primary" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                <h3 className="text-sm font-bold text-ascend-text-primary uppercase tracking-wider">
                   Review AI Ascend Refactoring
                 </h3>
               </div>
@@ -1773,7 +1855,7 @@ export default function ResumeWorkspace({
                 <span className="text-[10px] font-bold text-ascend-text-muted uppercase tracking-widest mb-1.5 block px-1">
                   Original Draft:
                 </span>
-                <div className="flex-1 p-4 rounded-button bg-black/40 border border-ascend-border text-ascend-text-secondary text-xs leading-relaxed overflow-y-auto select-text font-light whitespace-pre-wrap">
+                <div className="flex-1 p-4 rounded-button bg-ascend-surface-elevated border border-ascend-border text-ascend-text-secondary text-xs leading-relaxed overflow-y-auto select-text font-light whitespace-pre-wrap">
                   {diffOriginal}
                 </div>
               </div>
@@ -1782,7 +1864,7 @@ export default function ResumeWorkspace({
                 <span className="text-[10px] font-bold text-ascend-primary uppercase tracking-widest mb-1.5 block px-1">
                   AI Optimized Draft:
                 </span>
-                <div className="flex-1 p-4 rounded-button bg-ascend-ai/5 border border-ascend-ai/20 text-zinc-150 text-xs leading-relaxed overflow-y-auto select-text font-medium whitespace-pre-wrap">
+                <div className="flex-1 p-4 rounded-button bg-ascend-ai/5 border border-ascend-ai/20 text-ascend-text-secondary text-xs leading-relaxed overflow-y-auto select-text font-medium whitespace-pre-wrap">
                   {diffRevised}
                 </div>
               </div>
@@ -1797,7 +1879,7 @@ export default function ResumeWorkspace({
               </button>
               <button
                 onClick={diffOnAccept}
-                className="px-6 py-2 bg-gradient-to-r from-ascend-primary to-ascend-ai hover:from-[#F5B301] hover:to-[#C08500] text-black rounded-button text-xs font-black shadow-lg transition-all"
+                className="px-6 py-2 bg-gradient-to-r from-ascend-primary to-ascend-ai hover:from-ascend-primary-hover hover:to-ascend-primary-mid text-white rounded-button text-xs font-black shadow-lg transition-all"
               >
                 Accept Revision
               </button>

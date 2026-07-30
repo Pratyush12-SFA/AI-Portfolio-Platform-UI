@@ -11,7 +11,7 @@ import { setToken, removeToken } from "../services/Auth/auth.storage";
 export async function loginUser(request: Auth.LoginRequest) {
   const response = await login(request);
 
-  setToken(response.accessToken);
+  setToken(response.AccessToken);
 
   return response;
 }
@@ -19,7 +19,7 @@ export async function loginUser(request: Auth.LoginRequest) {
 export async function registerUser(request: Auth.RegisterRequest) {
   const response = await register(request);
 
-  setToken(response.accessToken);
+  setToken(response.AccessToken);
 
   return response;
 }
@@ -33,14 +33,14 @@ export async function logoutUser() {
 export async function googleLoginUser(idToken: string) {
   const response = await googleLogin(idToken);
 
-  setToken(response.accessToken);
+  setToken(response.AccessToken);
   return response;
 }
 
 export async function refreshUserToken() {
   const response = await refreshToken();
 
-  setToken(response.accessToken);
+  setToken(response.AccessToken);
 
   return response;
 }
