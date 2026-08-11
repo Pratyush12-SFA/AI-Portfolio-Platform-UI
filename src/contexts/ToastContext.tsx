@@ -9,15 +9,8 @@ import { AnimatePresence, motion } from "framer-motion";
 
 type ToastType = "success" | "error" | "info" | "warning";
 
-interface Toast {
-  id: string;
-  type: ToastType;
-  message: string;
-  duration: number;
-}
-
 interface ToastContextType {
-  toasts: Toast[];
+  toasts: Shared.Toast[];
   addToast: (type: ToastType, message: string, duration?: number) => string;
   removeToast: (id: string) => void;
 }
@@ -25,7 +18,7 @@ interface ToastContextType {
 const ToastContext = createContext<ToastContextType | null>(null);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [toasts, setToasts] = useState<Shared.Toast[]>([]);
 
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
