@@ -1,0 +1,117 @@
+version: "3.9"
+
+name: ascend
+
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ascend-sqlserver
+
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: ${MSSQL_PID}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+
+    ports:
+      - "${SQL_PORT}:1433"
+
+    volumes:
+      - ascend_sql_data:/var/opt/mssql
+
+    restart: unless-stopped
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $$MSSQL_SA_PASSWORD -C -Q \"SELECT 1\" || exit 1"
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 40s
+
+    networks:
+      - ascend-network
+
+
+  api:
+
+    container_name: ascend-api
+
+    build:
+      context: ../AI-Portfolio-Platform-backend
+      dockerfile: Dockerfile
+
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+    environment:
+
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+
+      ConnectionStrings__DefaultConnection: ${CONNECTION_STRING}
+
+      JwtSettings__Issuer: ${JWT_ISSUER}
+      JwtSettings__Audience: ${JWT_AUDIENCE}
+      JwtSettings__SecretKey: ${JWT_SECRET}
+
+      GeminiSettings__GeminiApiKey: ${GEMINI_API_KEY}
+      GeminiSettings__DefaultModel: ${GEMINI_MODEL}
+
+      GoogleSettings__ClientId: ${GOOGLE_CLIENT_ID}
+
+    ports:
+      - "${BACKEND_PORT}:8080"
+
+    restart: unless-stopped
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--spider",
+          "-q",
+          "http://localhost:8080"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+
+    networks:
+      - ascend-network
+
+
+  frontend:
+
+    container_name: ascend-frontend
+
+    build:
+      context: ../ai-portfolio-ui
+      dockerfile: Dockerfile
+
+    depends_on:
+      api:
+        condition: service_started
+
+    ports:
+      - "${FRONTEND_PORT}:80"
+
+    restart: unless-stopped
+
+    networks:
+      - ascend-network
+
+
+volumes:
+
+  ascend_sql_data:
+
+networks:
+
+  ascend-network:
+    driver: bridge
