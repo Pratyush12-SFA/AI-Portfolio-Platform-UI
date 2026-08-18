@@ -10,13 +10,14 @@ import {
   TrendingUp,
   MessageSquare,
   Settings,
+  type LucideIcon,
 } from "lucide-react";
 
 interface CommandItem {
   id: string;
   label: string;
   category: string;
-  icon: React.ComponentType<any>;
+  icon: LucideIcon;
   shortcut?: string;
   path: string;
 }
