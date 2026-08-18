@@ -17,14 +17,14 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     try {
       const refreshResponse = await refreshToken();
 
-      setToken(refreshResponse.accessToken);
+      setToken(refreshResponse.AccessToken);
 
       response = await fetch(url, {
         ...options,
         credentials: "include",
         headers: {
           ...options.headers,
-          Authorization: `Bearer ${refreshResponse.accessToken}`,
+          Authorization: `Bearer ${refreshResponse.AccessToken}`,
         },
       });
     } catch {

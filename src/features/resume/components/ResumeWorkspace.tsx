@@ -48,8 +48,7 @@ type ResumeItem = Partial<
     Omit<Portfolio.Experience, "EndDate"> &
     Omit<Portfolio.Project, "EndDate"> & {
       EndDate?: string | null;
-    } &
-    Portfolio.Skill &
+    } & Portfolio.Skill &
     Portfolio.Certification &
     Portfolio.Achievement &
     Portfolio.Language &
@@ -224,7 +223,10 @@ export default function ResumeWorkspace({
       setDiffOnAccept(() => {
         return async () => {
           const updated = { ...experience, Description: result };
-          await onUpsertItem("experience", updated as unknown as Record<string, unknown>);
+          await onUpsertItem(
+            "experience",
+            updated as unknown as Record<string, unknown>,
+          );
           setShowDiffModal(false);
           addToast("success", "Experience updated with AI revision!");
         };
@@ -260,7 +262,10 @@ export default function ResumeWorkspace({
       setDiffOnAccept(() => {
         return async () => {
           const updated = { ...project, Description: result };
-          await onUpsertItem("projects", updated as unknown as Record<string, unknown>);
+          await onUpsertItem(
+            "projects",
+            updated as unknown as Record<string, unknown>,
+          );
           setShowDiffModal(false);
           addToast("success", "Project updated with AI metrics!");
         };
@@ -357,7 +362,8 @@ export default function ResumeWorkspace({
                 Live Resume Preview
               </h3>
               <p className="text-[10px] text-ascend-text-secondary font-light">
-                Preview your generated resume in the premium two-column template. Click "Print Resume" to export as PDF.
+                Preview your generated resume in the premium two-column
+                template. Click "Print Resume" to export as PDF.
               </p>
             </div>
             <button
@@ -368,7 +374,9 @@ export default function ResumeWorkspace({
             </button>
           </div>
 
-          <style dangerouslySetInnerHTML={{ __html: `
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
             @media print {
               body, html {
                 background: white !important;
@@ -400,14 +408,19 @@ export default function ResumeWorkspace({
                 print-color-adjust: exact !important;
               }
             }
-          `}} />
+          `,
+            }}
+          />
 
           <div className="resume-preview-container w-full max-w-[820px] mx-auto bg-ascend-surface text-ascend-text-primary rounded-card shadow-2xl border border-ascend-border overflow-hidden flex flex-col font-sans select-text">
             <div className="bg-ascend-text-primary text-white py-8 px-10 flex flex-col items-center md:items-end justify-center text-center md:text-right relative">
               <div className="absolute left-10 -bottom-8 w-24 h-24 rounded-full bg-ascend-surface-elevated border-4 border-white overflow-hidden shadow-lg hidden md:block">
-                <img 
-                  src={profile?.ProfilePictureUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"} 
-                  alt="Avatar" 
+                <img
+                  src={
+                    profile?.ProfilePictureUrl ||
+                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"
+                  }
+                  alt="Avatar"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -429,21 +442,35 @@ export default function ResumeWorkspace({
                   </h3>
                   <ul className="space-y-2 text-[11px] text-ascend-text-secondary leading-relaxed font-medium">
                     <li className="flex items-center gap-2">
-                      <span className="font-bold text-ascend-text-primary">📞</span>
+                      <span className="font-bold text-ascend-text-primary">
+                        📞
+                      </span>
                       <span>{profile?.PhoneNumber || "+91-98765432XX"}</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="font-bold text-ascend-text-primary">✉️</span>
-                      <span className="break-all">{profile?.ContactEmail || "riya.sharma@email.com"}</span>
+                      <span className="font-bold text-ascend-text-primary">
+                        ✉️
+                      </span>
+                      <span className="break-all">
+                        {profile?.ContactEmail || "riya.sharma@email.com"}
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="font-bold text-ascend-text-primary">📍</span>
-                      <span>{profile?.Address || "Location (City, State)"}</span>
+                      <span className="font-bold text-ascend-text-primary">
+                        📍
+                      </span>
+                      <span>
+                        {profile?.Address || "Location (City, State)"}
+                      </span>
                     </li>
                     {socialLinks && socialLinks.length > 0 && (
                       <li className="flex items-center gap-2">
-                        <span className="font-bold text-ascend-text-primary">🔗</span>
-                        <span className="break-all">{socialLinks[0].Url.replace("https://", "")}</span>
+                        <span className="font-bold text-ascend-text-primary">
+                          🔗
+                        </span>
+                        <span className="break-all">
+                          {socialLinks[0].Url.replace("https://", "")}
+                        </span>
                       </li>
                     )}
                   </ul>
@@ -457,8 +484,14 @@ export default function ResumeWorkspace({
                     <ul className="list-disc pl-4 space-y-2 text-[11px] text-ascend-text-secondary font-medium">
                       {certifications.map((cert) => (
                         <li key={cert.Id}>
-                          <span className="font-bold text-ascend-text-primary">{cert.Name}</span>
-                          {cert.Issuer && <span className="text-[10px] block text-ascend-text-muted">({cert.Issuer})</span>}
+                          <span className="font-bold text-ascend-text-primary">
+                            {cert.Name}
+                          </span>
+                          {cert.Issuer && (
+                            <span className="text-[10px] block text-ascend-text-muted">
+                              ({cert.Issuer})
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -473,7 +506,12 @@ export default function ResumeWorkspace({
                     <ul className="list-disc pl-4 space-y-1.5 text-[11px] text-ascend-text-secondary font-medium">
                       {languages.map((lang) => (
                         <li key={lang.Id}>
-                          {lang.Name} {lang.ProficiencyLevel && <span className="text-ascend-text-muted font-normal">({lang.ProficiencyLevel})</span>}
+                          {lang.Name}{" "}
+                          {lang.ProficiencyLevel && (
+                            <span className="text-ascend-text-muted font-normal">
+                              ({lang.ProficiencyLevel})
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -488,7 +526,8 @@ export default function ResumeWorkspace({
                     Career Objective
                   </h3>
                   <p className="text-[11px] text-ascend-text-secondary leading-relaxed font-light select-text">
-                    {profile?.Summary || "Motivated Computer Science graduate eager to apply programming and analytical skills in a dynamic organization."}
+                    {profile?.Summary ||
+                      "Motivated Computer Science graduate eager to apply programming and analytical skills in a dynamic organization."}
                   </p>
                 </div>
 
@@ -502,7 +541,12 @@ export default function ResumeWorkspace({
                       {skills.map((skill) => (
                         <li key={skill.Id}>
                           {skill.Category ? (
-                            <span><strong className="text-ascend-text-primary">{skill.Category}:</strong> {skill.Name}</span>
+                            <span>
+                              <strong className="text-ascend-text-primary">
+                                {skill.Category}:
+                              </strong>{" "}
+                              {skill.Name}
+                            </span>
                           ) : (
                             <span>{skill.Name}</span>
                           )}
@@ -522,21 +566,38 @@ export default function ResumeWorkspace({
                       {educations.map((edu) => (
                         <div key={edu.Id} className="space-y-1 text-[11px]">
                           <div className="flex justify-between font-bold text-ascend-text-primary">
-                            <span>{edu.Degree} {edu.FieldOfStudy && `in ${edu.FieldOfStudy}`}</span>
+                            <span>
+                              {edu.Degree}{" "}
+                              {edu.FieldOfStudy && `in ${edu.FieldOfStudy}`}
+                            </span>
                             <span className="text-ascend-text-muted text-[10px] font-normal">
-                              {formatDate(edu.StartDate)} - {edu.IsCurrent ? "Present" : formatDate(edu.EndDate) || "Present"}
+                              {formatDate(edu.StartDate)} -{" "}
+                              {edu.IsCurrent
+                                ? "Present"
+                                : formatDate(edu.EndDate) || "Present"}
                             </span>
                           </div>
-                          <div className="text-ascend-text-secondary font-semibold">{edu.Institution}</div>
-                          {edu.Grade && <div className="text-ascend-text-muted text-[10px]">{edu.Grade}</div>}
-                          {edu.Description && <div className="text-ascend-text-muted font-light mt-1 text-[10px]">{edu.Description}</div>}
+                          <div className="text-ascend-text-secondary font-semibold">
+                            {edu.Institution}
+                          </div>
+                          {edu.Grade && (
+                            <div className="text-ascend-text-muted text-[10px]">
+                              {edu.Grade}
+                            </div>
+                          )}
+                          {edu.Description && (
+                            <div className="text-ascend-text-muted font-light mt-1 text-[10px]">
+                              {edu.Description}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {((projects && projects.length > 0) || (experiences && experiences.length > 0)) && (
+                {((projects && projects.length > 0) ||
+                  (experiences && experiences.length > 0)) && (
                   <div className="relative pl-6 border-l border-ascend-border">
                     <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
                     <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary mb-3 flex items-center gap-2">
@@ -546,22 +607,43 @@ export default function ResumeWorkspace({
                       {experiences.map((exp) => (
                         <div key={exp.Id} className="space-y-1 text-[11px]">
                           <div className="flex justify-between font-bold text-ascend-text-primary">
-                            <span>{exp.Position} at {exp.Company || exp.CompanyName}</span>
+                            <span>
+                              {exp.Position} at {exp.Company || exp.CompanyName}
+                            </span>
                             <span className="text-ascend-text-muted text-[10px] font-normal">
-                              {formatDate(exp.StartDate)} - {exp.IsCurrent ? "Present" : formatDate(exp.EndDate) || ""}
+                              {formatDate(exp.StartDate)} -{" "}
+                              {exp.IsCurrent
+                                ? "Present"
+                                : formatDate(exp.EndDate) || ""}
                             </span>
                           </div>
-                          {exp.Location && <div className="text-ascend-text-muted text-[10px]">{exp.Location}</div>}
-                          {exp.Description && <p className="text-ascend-text-muted font-light mt-1 text-[10px] whitespace-pre-line">{exp.Description}</p>}
+                          {exp.Location && (
+                            <div className="text-ascend-text-muted text-[10px]">
+                              {exp.Location}
+                            </div>
+                          )}
+                          {exp.Description && (
+                            <p className="text-ascend-text-muted font-light mt-1 text-[10px] whitespace-pre-line">
+                              {exp.Description}
+                            </p>
+                          )}
                         </div>
                       ))}
                       {projects.map((proj) => (
                         <div key={proj.Id} className="space-y-1 text-[11px]">
                           <div className="flex justify-between font-bold text-ascend-text-primary">
                             <span>{proj.Title}</span>
-                            {proj.TechStack && <span className="text-ascend-text-muted text-[10px] font-normal">({proj.TechStack})</span>}
+                            {proj.TechStack && (
+                              <span className="text-ascend-text-muted text-[10px] font-normal">
+                                ({proj.TechStack})
+                              </span>
+                            )}
                           </div>
-                          {proj.Description && <p className="text-ascend-text-muted font-light mt-1 text-[10px]">{proj.Description}</p>}
+                          {proj.Description && (
+                            <p className="text-ascend-text-muted font-light mt-1 text-[10px]">
+                              {proj.Description}
+                            </p>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -716,8 +798,11 @@ export default function ResumeWorkspace({
                         {exp.Company}
                       </span>
                       <span className="text-[10px] text-ascend-text-muted block mt-0.5">
-                        {formatDate(exp.StartDate)} - {exp.IsCurrent ? "Present" : formatDate(exp.EndDate) || "Present"} |{" "}
-                        {exp.Location || "Remote"}
+                        {formatDate(exp.StartDate)} -{" "}
+                        {exp.IsCurrent
+                          ? "Present"
+                          : formatDate(exp.EndDate) || "Present"}{" "}
+                        | {exp.Location || "Remote"}
                       </span>
                     </div>
 
@@ -1040,8 +1125,11 @@ export default function ResumeWorkspace({
                       {edu.Institution}
                     </p>
                     <p className="text-[10px] text-ascend-text-muted">
-                      {formatDate(edu.StartDate)} - {edu.IsCurrent ? "Present" : formatDate(edu.EndDate) || "Present"} | Grade:{" "}
-                      {edu.Grade || "N/A"}
+                      {formatDate(edu.StartDate)} -{" "}
+                      {edu.IsCurrent
+                        ? "Present"
+                        : formatDate(edu.EndDate) || "Present"}{" "}
+                      | Grade: {edu.Grade || "N/A"}
                     </p>
                   </div>
                 ))
@@ -1339,7 +1427,9 @@ export default function ResumeWorkspace({
                             setModalItem({
                               ...modalItem,
                               IsCurrent: e.target.checked,
-                              EndDate: e.target.checked ? null : modalItem.EndDate,
+                              EndDate: e.target.checked
+                                ? null
+                                : modalItem.EndDate,
                             })
                           }
                           className="rounded border-ascend-border bg-ascend-surface"
@@ -1603,7 +1693,9 @@ export default function ResumeWorkspace({
                             setModalItem({
                               ...modalItem,
                               IsCurrent: e.target.checked,
-                              EndDate: e.target.checked ? null : modalItem.EndDate,
+                              EndDate: e.target.checked
+                                ? null
+                                : modalItem.EndDate,
                             })
                           }
                           className="rounded border-ascend-border bg-ascend-surface"
@@ -1659,7 +1751,10 @@ export default function ResumeWorkspace({
                         type="date"
                         value={toDateInputValue(modalItem.IssueDate)}
                         onChange={(e) =>
-                          setModalItem({ ...modalItem, IssueDate: e.target.value })
+                          setModalItem({
+                            ...modalItem,
+                            IssueDate: e.target.value,
+                          })
                         }
                         className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       />
@@ -1672,7 +1767,10 @@ export default function ResumeWorkspace({
                         type="date"
                         value={toDateInputValue(modalItem.ExpirationDate)}
                         onChange={(e) =>
-                          setModalItem({ ...modalItem, ExpirationDate: e.target.value })
+                          setModalItem({
+                            ...modalItem,
+                            ExpirationDate: e.target.value,
+                          })
                         }
                         className="w-full rounded-xl border border-ascend-border bg-ascend-surface px-3.5 py-2 text-xs text-ascend-text-primary outline-none focus:border-ascend-primary"
                       />

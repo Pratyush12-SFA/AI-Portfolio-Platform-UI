@@ -40,7 +40,7 @@ export default function AICoachingPanel() {
       const data = await getChatSessions();
       setSessions(data || []);
       if (data && data.length > 0 && activeSessionId === null) {
-        setActiveSessionId(data[0].id ?? data[0].Id);
+        setActiveSessionId(data[0].Id);
       }
     } catch (err) {
       console.error(err);
@@ -51,7 +51,14 @@ export default function AICoachingPanel() {
     setIsLoadingMessages(true);
     try {
       const data = await getChatMessages(sessionId);
-      setMessages(data || []);
+      const validSorted = (data || [])
+        .filter((msg: Portfolio.ChatMessage) => msg && msg.Content && msg.Content.trim())
+        .sort((a: Portfolio.ChatMessage, b: Portfolio.ChatMessage) => {
+          const timeA = a.CreatedOn ? new Date(a.CreatedOn).getTime() : 0;
+          const timeB = b.CreatedOn ? new Date(b.CreatedOn).getTime() : 0;
+          return timeA - timeB;
+        });
+      setMessages(validSorted);
     } catch (err) {
       console.error(err);
     } finally {
@@ -68,7 +75,7 @@ export default function AICoachingPanel() {
           setSessions(data || []);
           setActiveSessionId((prev) => {
             if (data && data.length > 0 && prev === null) {
-              return data[0].id ?? data[0].Id;
+              return data[0].Id;
             }
             return prev;
           });
@@ -96,7 +103,14 @@ export default function AICoachingPanel() {
       try {
         const data = await getChatMessages(validSessionId);
         if (active) {
-          setMessages(data || []);
+          const validSorted = (data || [])
+            .filter((msg: Portfolio.ChatMessage) => msg && msg.Content && msg.Content.trim())
+            .sort((a: Portfolio.ChatMessage, b: Portfolio.ChatMessage) => {
+              const timeA = a.CreatedOn ? new Date(a.CreatedOn).getTime() : 0;
+              const timeB = b.CreatedOn ? new Date(b.CreatedOn).getTime() : 0;
+              return timeA - timeB;
+            });
+          setMessages(validSorted);
         }
       } catch (err) {
         console.error(err);
@@ -114,8 +128,11 @@ export default function AICoachingPanel() {
   }, [activeSessionId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const timer = setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [messages, isSending, isLoadingMessages]);
 
   const handleCreateSession = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,7 +141,7 @@ export default function AICoachingPanel() {
     try {
       const newSession = await createChatSession(newSessionTitle);
       await loadSessions();
-      setActiveSessionId(newSession.id ?? newSession.Id);
+      setActiveSessionId(newSession.Id);
       setNewSessionTitle("");
     } catch (err) {
       console.error(err);
@@ -145,9 +162,9 @@ export default function AICoachingPanel() {
     setMessages((prev) => [
       ...prev,
       {
-        role: "user",
-        content: userMsgText,
-        createdOn: new Date().toISOString(),
+        Role: "user",
+        Content: userMsgText,
+        CreatedOn: new Date().toISOString(),
       },
     ]);
 
@@ -169,8 +186,8 @@ export default function AICoachingPanel() {
       try {
         const newSession = await createChatSession("Quick AI Consultation");
         setSessions((prev) => [newSession, ...prev]);
-        currentSessionId = newSession.id ?? newSession.Id;
-        setActiveSessionId(newSession.id ?? newSession.Id);
+        currentSessionId = newSession.Id;
+        setActiveSessionId(newSession.Id);
       } catch (err) {
         console.error(err);
         setIsCreatingSession(false);
@@ -226,7 +243,7 @@ export default function AICoachingPanel() {
             </div>
           ) : (
             sessions.map((sess) => {
-              const sessId = sess.id ?? sess.id;
+              const sessId = sess.Id;
               return (
                 <button
                   key={sessId}
@@ -239,7 +256,7 @@ export default function AICoachingPanel() {
                 >
                   <MessageSquare className="w-4 h-4 shrink-0" />
                   <span className="text-xs font-medium truncate">
-                    {sess.title ?? sess.title}
+                    {sess.Title}
                   </span>
                 </button>
               );
@@ -309,7 +326,7 @@ export default function AICoachingPanel() {
                 </div>
               ) : (
                 messages.map((msg, idx) => {
-                  const role = msg.role ?? msg.role;
+                  const role = msg.Role;
                   const isAssistant =
                     role === "Assistant" ||
                     role === "assistant" ||
@@ -332,7 +349,7 @@ export default function AICoachingPanel() {
                         {isAssistant ? (
                           <Sparkles className="w-4.5 h-4.5" />
                         ) : (
-                          <User className="w-4 h-4" />
+                          <User className="w-4.5 h-4.5" />
                         )}
                       </div>
 
@@ -344,7 +361,7 @@ export default function AICoachingPanel() {
                         }`}
                       >
                         <p className="whitespace-pre-wrap">
-                          {msg.content ?? msg.content}
+                          {msg.Content}
                         </p>
                       </div>
                     </div>
