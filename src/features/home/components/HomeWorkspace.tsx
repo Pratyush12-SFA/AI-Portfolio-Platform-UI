@@ -7,6 +7,7 @@ import {
   ArrowRight,
   FileCheck2,
   CheckCircle2,
+  type LucideIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -55,9 +56,12 @@ function AnimatedCounter({
 
 export default function HomeWorkspace({
   profile,
+  projects = [],
+  skills = [],
+  experiences = [],
 }: HomeWorkspaceProps) {
   const navigate = useNavigate();
-  const userName = profile?.FullName?.split(" ")[0] || "Pratyush";
+  const userName = profile?.FullName?.split(" ")[0] || "User";
   const [miniChatInput, setMiniChatInput] = useState("");
 
   const getGreeting = () => {
@@ -67,92 +71,159 @@ export default function HomeWorkspace({
     return "Good evening";
   };
 
+  // Compute profile completion percentage dynamically
+  let completion = 0;
+  if (profile?.FullName) completion += 15;
+  if (profile?.Summary) completion += 15;
+  if (profile?.ContactEmail || profile?.PhoneNumber) completion += 10;
+  if (experiences && experiences.length > 0) completion += 20;
+  if (projects && projects.length > 0) completion += 20;
+  if (skills && skills.length > 0) completion += 20;
+
   const metrics = [
     {
-      label: "Resume ATS Score",
-      value: 88,
+      label: "Profile Completion",
+      value: completion,
       suffix: "%",
-      desc: "ATS verified · top 12%",
+      desc:
+        completion === 100
+          ? "Profile fully completed"
+          : "Add more info to reach 100%",
       icon: Sparkles,
       iconStyle: "bg-blue-50 text-blue-600 border border-blue-100",
       tab: "/dashboard/resume",
-      trend: "+4%",
+      trend: `${completion}%`,
     },
     {
-      label: "Application Success",
-      value: 74,
-      suffix: "%",
-      desc: "+12% this week",
+      label: "Projects Added",
+      value: projects.length,
+      suffix: "",
+      desc:
+        projects.length > 0
+          ? `${projects.length} active projects`
+          : "No projects added yet",
       icon: Send,
       iconStyle:
         "bg-[#EEF3FF] text-[#0052FF] border border-[rgba(0,82,255,0.15)]",
-      tab: "/dashboard/jobs",
-      trend: "+12%",
+      tab: "/dashboard/portfolio",
+      trend: `+${projects.length}`,
     },
     {
-      label: "Skills Coverage",
-      value: 82,
-      suffix: "%",
-      desc: "18 / 22 core skills matched",
+      label: "Skills Matched",
+      value: skills.length,
+      suffix: "",
+      desc: `${skills.length} core competencies`,
       icon: FileCheck2,
       iconStyle: "bg-emerald-50 text-emerald-600 border border-emerald-100",
       tab: "/dashboard/resume",
-      trend: "+6%",
+      trend: `+${skills.length}`,
     },
     {
-      label: "AI Confidence Score",
-      value: 91,
-      suffix: "%",
-      desc: "High fit recommendation",
+      label: "Work Experiences",
+      value: experiences.length,
+      suffix: "",
+      desc: `${experiences.length} career achievements`,
       icon: Bot,
       iconStyle: "bg-sky-50 text-sky-600 border border-sky-100",
-      tab: "/dashboard/ai-assistant",
-      trend: "+3%",
+      tab: "/dashboard/resume",
+      trend: `+${experiences.length}`,
     },
   ];
 
-  const timelineItems = [
-    {
-      title: "STAR Bullet Optimization Run",
-      time: "2 hours ago",
-      desc: "Rewrote Google experience description focusing on metrics and business outcomes.",
+  const getAIRecommendation = () => {
+    if (!skills || skills.length === 0) {
+      return {
+        title: "Add Core Skills",
+        desc: "Get started by listing your technical skills, programming languages, and frameworks in the resume builder to enable job matching.",
+      };
+    }
+    if (!projects || projects.length === 0) {
+      return {
+        title: "Add Showcase Projects",
+        desc: "Showcase your practical expertise by adding projects with technical stacks and GitHub links to your portfolio.",
+      };
+    }
+    if (!profile?.Summary) {
+      return {
+        title: "Write Professional Summary",
+        desc: "Add a career summary to your profile to let recruiters know your specialization and career objectives.",
+      };
+    }
+    return {
+      title: "Optimize ATS Keyword Matching",
+      desc: "Your profile is in great shape! Head to the Jobs board to upload job descriptions and run ATS match checks against your resume.",
+    };
+  };
+
+  const aiRec = getAIRecommendation();
+
+  const timelineItems: Array<{
+    title: string;
+    time: string;
+    desc: string;
+    icon: LucideIcon;
+    iconStyle: string;
+  }> = [];
+
+  if (profile?.Summary) {
+    timelineItems.push({
+      title: "Profile Summary Updated",
+      time: "Recent",
+      desc: "Updated your professional career summary and target focus.",
       icon: Sparkles,
       iconStyle: "bg-blue-50 border border-blue-100 text-blue-600",
-    },
-    {
-      title: "Portfolio Domain Configured",
-      time: "Yesterday",
-      desc: "Successfully mapped custom slug 'pratyush-software' to public URL.",
+    });
+  }
+
+  if (projects && projects.length > 0) {
+    const latestProj = projects[projects.length - 1];
+    timelineItems.push({
+      title: `Project Added: ${latestProj.Title}`,
+      time: "Recent",
+      desc:
+        latestProj.Description ||
+        "Added a new project to showcase your technical stack.",
       icon: CheckCircle2,
       iconStyle: "bg-emerald-50 border border-emerald-100 text-emerald-600",
-    },
-    {
-      title: "Job Fit Check: Senior Frontend Architect",
-      time: "3 days ago",
-      desc: "Ran match scanner for Netflix JD. Score: 82% match with 4 suggested keywords.",
+    });
+  }
+
+  if (experiences && experiences.length > 0) {
+    const latestExp = experiences[experiences.length - 1];
+    timelineItems.push({
+      title: `Experience Added: ${latestExp.JobTitle || latestExp.Position}`,
+      time: "Recent",
+      desc: `Joined ${latestExp.CompanyName || latestExp.Company}.`,
       icon: FileCheck2,
       iconStyle: "bg-sky-50 border border-sky-100 text-sky-600",
-    },
-  ];
+    });
+  }
 
-  const mockProjects = [
-    {
-      name: "AI Portfolio Platform",
-      role: "Lead Frontend Architect",
-      status: "Published",
-      progress: 95,
-      score: "92% ATS",
-      tech: ["React 19", "Vite", "Tailwind v4"],
-    },
-    {
-      name: "Talent Development Portal",
-      role: "Senior Systems Engineer",
-      status: "In Progress",
-      progress: 68,
-      score: "85% ATS",
-      tech: ["C# .NET", "PostgreSQL", "Zustand"],
-    },
-  ];
+  if (timelineItems.length === 0) {
+    timelineItems.push({
+      title: "Welcome to Ascend!",
+      time: "Just now",
+      desc: "Start by completing your profile in the Resume Builder workspace.",
+      icon: Sparkles,
+      iconStyle: "bg-blue-50 border border-blue-100 text-blue-600",
+    });
+  }
+
+  const displayProjects = projects.map((p) => {
+    const tech = p.TechStack
+      ? p.TechStack.split(",").map((t) => t.trim())
+      : p.Technologies
+        ? p.Technologies.split(",").map((t) => t.trim())
+        : [];
+    return {
+      name: p.Title,
+      role: p.Role || "Contributor",
+      status: p.ProjectUrl || p.GithubUrl ? "Published" : "Draft",
+      progress: p.Description ? 100 : 50,
+      score: p.TechStack ? "Optimized" : "Draft",
+      tech: tech.slice(0, 3),
+    };
+  });
 
   return (
     <div className="space-y-8 pb-12 max-w-4xl mx-auto select-none">
@@ -193,13 +264,17 @@ export default function HomeWorkspace({
           </div>
           <div className="flex items-center gap-4 shrink-0">
             <div className="text-right sm:block hidden">
-              <span className="text-2xl font-bold text-[#0052FF]">82%</span>
+              <span className="text-2xl font-bold text-[#0052FF]">
+                {completion}%
+              </span>
               <span className="text-[10px] text-gray-400 block font-semibold">
                 COMPLETED
               </span>
             </div>
             <div className="w-16 h-16 rounded-full border-4 border-gray-100 flex items-center justify-center relative bg-gray-50 shrink-0">
-              <span className="text-sm font-bold text-gray-800">82%</span>
+              <span className="text-sm font-bold text-gray-800">
+                {completion}%
+              </span>
               <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
                 <circle
                   cx="32"
@@ -208,7 +283,7 @@ export default function HomeWorkspace({
                   className="stroke-[#0052FF] fill-none"
                   strokeWidth="4"
                   strokeDasharray={2 * Math.PI * 28}
-                  strokeDashoffset={2 * Math.PI * 28 * (1 - 0.82)}
+                  strokeDashoffset={2 * Math.PI * 28 * (1 - completion / 100)}
                 />
               </svg>
             </div>
@@ -236,16 +311,9 @@ export default function HomeWorkspace({
             <span className="section-label text-[#0052FF]">
               Primary AI Recommendation
             </span>
-            <h3 className="text-base font-bold text-gray-900">
-              Improve ATS Score
-            </h3>
+            <h3 className="text-base font-bold text-gray-900">{aiRec.title}</h3>
             <p className="text-xs text-gray-600 leading-relaxed">
-              Your resume is currently missing{" "}
-              <strong className="text-gray-900 font-semibold">
-                React 19 Server Components
-              </strong>
-              . This skill is explicitly required in 3 of your bookmarked job
-              descriptions.
+              {aiRec.desc}
             </p>
           </div>
           <button
@@ -301,7 +369,7 @@ export default function HomeWorkspace({
       <div className="space-y-3">
         <span className="section-label px-0.5">Projects</span>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {mockProjects.map((p, idx) => (
+          {displayProjects.map((p, idx) => (
             <div
               key={idx}
               onClick={() => navigate("/dashboard/portfolio")}

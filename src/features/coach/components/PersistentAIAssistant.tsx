@@ -65,7 +65,7 @@ export default function PersistentAIAssistant({
       setSessions(data || []);
       if (data && data.length > 0) {
         if (activeSessionId === null || autoSelect) {
-          const firstId = data[0].id;
+          const firstId = data[0].Id;
           setActiveSessionId(firstId);
           localStorage.setItem("active_chat_session_id", String(firstId));
         }
@@ -79,7 +79,14 @@ export default function PersistentAIAssistant({
     setIsLoadingMessages(true);
     try {
       const data = await getChatMessages(sessionId);
-      setMessages(data || []);
+      const validSorted = (data || [])
+        .filter((msg: Portfolio.ChatMessage) => msg && msg.Content && msg.Content.trim())
+        .sort((a: Portfolio.ChatMessage, b: Portfolio.ChatMessage) => {
+          const timeA = a.CreatedOn ? new Date(a.CreatedOn).getTime() : 0;
+          const timeB = b.CreatedOn ? new Date(b.CreatedOn).getTime() : 0;
+          return timeA - timeB;
+        });
+      setMessages(validSorted);
     } catch (err) {
       console.error("Error loading messages:", err);
     } finally {
@@ -96,7 +103,7 @@ export default function PersistentAIAssistant({
           setSessions(data || []);
           setActiveSessionId((prev) => {
             if (data && data.length > 0 && prev === null) {
-              const firstId = data[0].id;
+              const firstId = data[0].Id;
               localStorage.setItem("active_chat_session_id", String(firstId));
               return firstId;
             }
@@ -124,7 +131,14 @@ export default function PersistentAIAssistant({
       try {
         const data = await getChatMessages(validSessionId);
         if (active) {
-          setMessages(data || []);
+          const validSorted = (data || [])
+            .filter((msg: Portfolio.ChatMessage) => msg && msg.Content && msg.Content.trim())
+            .sort((a: Portfolio.ChatMessage, b: Portfolio.ChatMessage) => {
+              const timeA = a.CreatedOn ? new Date(a.CreatedOn).getTime() : 0;
+              const timeB = b.CreatedOn ? new Date(b.CreatedOn).getTime() : 0;
+              return timeA - timeB;
+            });
+          setMessages(validSorted);
           localStorage.setItem(
             "active_chat_session_id",
             String(validSessionId),
@@ -143,8 +157,11 @@ export default function PersistentAIAssistant({
   }, [activeSessionId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isSending]);
+    const timer = setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [messages, isSending, isLoadingMessages]);
 
   const handleCreateSession = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,7 +170,7 @@ export default function PersistentAIAssistant({
     try {
       const newSession = await createChatSession(newSessionTitle);
       await loadSessions(false);
-      setActiveSessionId(newSession.id);
+      setActiveSessionId(newSession.Id);
       setNewSessionTitle("");
       setShowSessionsDropdown(false);
     } catch (err) {
@@ -176,8 +193,8 @@ export default function PersistentAIAssistant({
           inputText.trim().substring(0, 24) || "New AI Consulting";
         const newSession = await createChatSession(fallbackTitle);
         await loadSessions(false);
-        sessionId = newSession.id;
-        setActiveSessionId(newSession.id);
+        sessionId = newSession.Id;
+        setActiveSessionId(newSession.Id);
       } catch (err) {
         console.error("Auto-session creation failed:", err);
       }
@@ -192,9 +209,9 @@ export default function PersistentAIAssistant({
     setMessages((prev) => [
       ...prev,
       {
-        role: "user",
-        content: userMsgText,
-        createdOn: new Date().toISOString(),
+        Role: "user",
+        Content: userMsgText,
+        CreatedOn: new Date().toISOString(),
       },
     ]);
 
@@ -226,7 +243,7 @@ export default function PersistentAIAssistant({
   ];
 
   const activeSession = sessions.find(
-    (s) => s.id === activeSessionId,
+    (s) => s.Id === activeSessionId,
   );
 
   if (!isOpen && !floatingMode) return null;
@@ -250,7 +267,7 @@ export default function PersistentAIAssistant({
             >
               <span>
                 {activeSession
-                  ? activeSession.title
+                  ? activeSession.Title
                   : "AI Career Coach"}
               </span>
               <ChevronDown className="w-3.5 h-3.5" />
@@ -307,7 +324,7 @@ export default function PersistentAIAssistant({
                   </div>
                 ) : (
                   sessions.map((sess) => {
-                    const sessId = sess.id;
+                    const sessId = sess.Id;
                     return (
                       <button
                         key={sessId}
@@ -323,7 +340,7 @@ export default function PersistentAIAssistant({
                       >
                         <MessageSquare className="w-3.5 h-3.5 shrink-0" />
                         <span className="truncate">
-                          {sess.title}
+                          {sess.Title}
                         </span>
                       </button>
                     );
@@ -387,10 +404,10 @@ export default function PersistentAIAssistant({
           <>
             {messages.map((msg, idx) => {
               const isAssistant =
-                msg.role === "Assistant" ||
-                msg.role === "assistant" ||
-                msg.role === "System" ||
-                msg.role === "system";
+                msg.Role === "Assistant" ||
+                msg.Role === "assistant" ||
+                msg.Role === "System" ||
+                msg.Role === "system";
               const messageId = `msg-${idx}`;
 
               return (
@@ -423,14 +440,14 @@ export default function PersistentAIAssistant({
                       }`}
                     >
                       <p className="whitespace-pre-wrap select-text-wrap-break-words">
-                        {msg.content}
+                        {msg.Content}
                       </p>
 
                       {isAssistant && (
                         <button
                           onClick={() =>
                             handleCopyText(
-                              msg.content,
+                              msg.Content,
                               messageId,
                             )
                           }

@@ -154,22 +154,22 @@ declare namespace Portfolio {
   }
 
   interface ChatSession {
-    id: number;
-    title: string;
-    context?: string;
-    createdOn?: string;
-    messages?: ChatMessage[];
+    Id: number;
+    Title: string;
+    Context?: string;
+    CreatedOn?: string;
+    Messages?: ChatMessage[];
   }
 
   interface ChatMessage {
-    id?: number;
-    sessionId?: number;
-    role: string;
-    content: string;
-    tokensUsed?: number;
-    inputTokens?: number;
-    outputTokens?: number;
-    createdOn?: string;
+    Id?: number;
+    SessionId?: number;
+    Role: string;
+    Content: string;
+    TokensUsed?: number;
+    InputTokens?: number;
+    OutputTokens?: number;
+    CreatedOn?: string;
   }
 
   interface Session {

@@ -58,7 +58,7 @@ export async function googleLogin(idToken: string) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      idToken: idToken,
+      IdToken: idToken,
     }),
   });
   if (!response.ok) {
