@@ -11,10 +11,10 @@ import {
 import { motion } from "framer-motion";
 
 interface HomeWorkspaceProps {
-  profile: any;
-  projects?: any[];
-  skills?: any[];
-  experiences?: any[];
+  profile: Portfolio.Profile | null;
+  projects?: Portfolio.Project[];
+  skills?: Portfolio.Skill[];
+  experiences?: Portfolio.Experience[];
 }
 
 function AnimatedCounter({

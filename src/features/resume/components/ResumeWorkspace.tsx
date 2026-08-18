@@ -43,6 +43,18 @@ function toDateInputValue(dateStr: string | undefined | null): string {
   }
 }
 
+type ResumeItem = Partial<
+  Portfolio.Education &
+    Portfolio.Experience &
+    Portfolio.Project &
+    Portfolio.Skill &
+    Portfolio.Certification &
+    Portfolio.Achievement &
+    Portfolio.Language &
+    Portfolio.SocialLink &
+    Portfolio.CustomSection
+>;
+
 interface ResumeWorkspaceProps {
   educations: Portfolio.Education[];
   experiences: Portfolio.Experience[];
@@ -87,7 +99,7 @@ export default function ResumeWorkspace({
   // Form Modal States
   const [showEditModal, setShowEditModal] = useState(false);
   const [modalType, setModalType] = useState<string>("");
-  const [modalItem, setModalItem] = useState<any>({});
+  const [modalItem, setModalItem] = useState<ResumeItem>({});
 
   // AI Diff Modal State
   const [showDiffModal, setShowDiffModal] = useState(false);
@@ -99,7 +111,7 @@ export default function ResumeWorkspace({
   const [suggestedSkills, setSuggestedSkills] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
-  const handleOpenEdit = (type: string, item: any = {}) => {
+  const handleOpenEdit = (type: string, item: ResumeItem = {}) => {
     setModalType(type);
     setModalItem({ ...item });
     setShowEditModal(true);
@@ -108,7 +120,7 @@ export default function ResumeWorkspace({
   const handleSaveModal = async () => {
     try {
       setIsAIProcessing(true);
-      await onUpsertItem(modalType, modalItem);
+      await onUpsertItem(modalType, modalItem as Record<string, unknown>);
       setShowEditModal(false);
       setModalItem({});
     } catch {
@@ -188,7 +200,7 @@ export default function ResumeWorkspace({
   };
 
   const handleAIExperienceOptimize = async (
-    experience: any,
+    experience: Portfolio.Experience,
     mode: "rewrite" | "star",
   ) => {
     setIsAIProcessing(true);
@@ -205,12 +217,12 @@ export default function ResumeWorkspace({
         result = res.result;
       }
 
-      setDiffOriginal(experience.Description);
+      setDiffOriginal(experience.Description || "");
       setDiffRevised(result);
       setDiffOnAccept(() => {
         return async () => {
           const updated = { ...experience, Description: result };
-          await onUpsertItem("experience", updated);
+          await onUpsertItem("experience", updated as unknown as Record<string, unknown>);
           setShowDiffModal(false);
           addToast("success", "Experience updated with AI revision!");
         };
@@ -224,7 +236,7 @@ export default function ResumeWorkspace({
   };
 
   const handleAIProjectOptimize = async (
-    project: any,
+    project: Portfolio.Project,
     mode: "improve" | "metrics",
   ) => {
     setIsAIProcessing(true);
@@ -241,12 +253,12 @@ export default function ResumeWorkspace({
         result = res.result;
       }
 
-      setDiffOriginal(project.Description);
+      setDiffOriginal(project.Description || "");
       setDiffRevised(result);
       setDiffOnAccept(() => {
         return async () => {
           const updated = { ...project, Description: result };
-          await onUpsertItem("projects", updated);
+          await onUpsertItem("projects", updated as unknown as Record<string, unknown>);
           setShowDiffModal(false);
           addToast("success", "Project updated with AI metrics!");
         };
