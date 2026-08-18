@@ -44,9 +44,11 @@ function toDateInputValue(dateStr: string | undefined | null): string {
 }
 
 type ResumeItem = Partial<
-  Portfolio.Education &
-    Portfolio.Experience &
-    Portfolio.Project &
+  Omit<Portfolio.Education, "EndDate"> &
+    Omit<Portfolio.Experience, "EndDate"> &
+    Omit<Portfolio.Project, "EndDate"> & {
+      EndDate?: string | null;
+    } &
     Portfolio.Skill &
     Portfolio.Certification &
     Portfolio.Achievement &
@@ -207,11 +209,11 @@ export default function ResumeWorkspace({
     try {
       let result = "";
       if (mode === "rewrite") {
-        const res = await improveResumeSection(experience.Description);
+        const res = await improveResumeSection(experience.Description || "");
         result = res.result;
       } else {
         const res = await improveResumeSection(
-          experience.Description,
+          experience.Description || "",
           "Rewrite this work description strictly following the STAR method (Situation, Task, Action, Result). Highlight quantitative achievements.",
         );
         result = res.result;
@@ -243,11 +245,11 @@ export default function ResumeWorkspace({
     try {
       let result = "";
       if (mode === "improve") {
-        const res = await improveResumeSection(project.Description);
+        const res = await improveResumeSection(project.Description || "");
         result = res.result;
       } else {
         const res = await improveResumeSection(
-          project.Description,
+          project.Description || "",
           "Format this project description to emphasize scale, metrics, impact, and technology stack outcomes.",
         );
         result = res.result;
