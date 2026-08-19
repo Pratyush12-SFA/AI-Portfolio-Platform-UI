@@ -368,7 +368,7 @@ export default function ResumeWorkspace({
             </div>
             <button
               onClick={() => window.print()}
-              className="px-4 py-2 bg-gradient-to-r from-ascend-primary to-ascend-ai hover:from-ascend-primary-hover hover:to-ascend-primary-mid text-white text-xs font-black rounded-button flex items-center gap-1.5 shadow-lg transition-all"
+              className="px-4 py-2 bg-linear-to-r from-ascend-primary to-ascend-ai hover:from-ascend-primary-hover hover:to-ascend-primary-mid text-white text-xs font-black rounded-button flex items-center gap-1.5 shadow-lg transition-all"
             >
               <span>Print / Export PDF</span>
             </button>
@@ -412,7 +412,7 @@ export default function ResumeWorkspace({
             }}
           />
 
-          <div className="resume-preview-container w-full max-w-[820px] mx-auto bg-ascend-surface text-ascend-text-primary rounded-card shadow-2xl border border-ascend-border overflow-hidden flex flex-col font-sans select-text">
+          <div className="resume-preview-container w-full max-w-205 mx-auto bg-ascend-surface text-ascend-text-primary rounded-card shadow-2xl border border-ascend-border overflow-hidden flex flex-col font-sans select-text">
             <div className="bg-ascend-text-primary text-white py-8 px-10 flex flex-col items-center md:items-end justify-center text-center md:text-right relative">
               <div className="absolute left-10 -bottom-8 w-24 h-24 rounded-full bg-ascend-surface-elevated border-4 border-white overflow-hidden shadow-lg hidden md:block">
                 <img
@@ -521,7 +521,7 @@ export default function ResumeWorkspace({
 
               <div className="p-8 space-y-8 bg-ascend-surface">
                 <div className="relative pl-6 border-l border-ascend-border">
-                  <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
+                  <div className="absolute -left-1.25 top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
                   <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary mb-2 flex items-center gap-2">
                     Career Objective
                   </h3>
@@ -533,7 +533,7 @@ export default function ResumeWorkspace({
 
                 {skills && skills.length > 0 && (
                   <div className="relative pl-6 border-l border-ascend-border">
-                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
+                    <div className="absolute -left-1.25 top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
                     <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary mb-3 flex items-center gap-2">
                       Key Skills
                     </h3>
@@ -558,7 +558,7 @@ export default function ResumeWorkspace({
 
                 {educations && educations.length > 0 && (
                   <div className="relative pl-6 border-l border-ascend-border">
-                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
+                    <div className="absolute -left-1.25 top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
                     <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary mb-3 flex items-center gap-2">
                       Education
                     </h3>
@@ -599,7 +599,7 @@ export default function ResumeWorkspace({
                 {((projects && projects.length > 0) ||
                   (experiences && experiences.length > 0)) && (
                   <div className="relative pl-6 border-l border-ascend-border">
-                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
+                    <div className="absolute -left-1.25 top-1.5 w-2.5 h-2.5 rounded-full bg-ascend-text-primary border border-white" />
                     <h3 className="text-xs font-bold uppercase tracking-widest text-ascend-text-primary mb-3 flex items-center gap-2">
                       Projects & Experience
                     </h3>
@@ -1991,7 +1991,7 @@ export default function ResumeWorkspace({
               </button>
               <button
                 onClick={diffOnAccept}
-                className="px-6 py-2 bg-gradient-to-r from-ascend-primary to-ascend-ai hover:from-ascend-primary-hover hover:to-ascend-primary-mid text-white rounded-button text-xs font-black shadow-lg transition-all"
+                className="px-6 py-2 bg-linear-to-r from-ascend-primary to-ascend-ai hover:from-ascend-primary-hover hover:to-ascend-primary-mid text-white rounded-button text-xs font-black shadow-lg transition-all"
               >
                 Accept Revision
               </button>

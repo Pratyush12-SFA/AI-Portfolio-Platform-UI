@@ -37,62 +37,56 @@ services:
 
   api:
 
-    container_name: ascend-api
+  container_name: ascend-api
 
-    build:
-      context: ../AI-Portfolio-Platform-backend
-      dockerfile: Dockerfile
+  image: YOUR_DOCKERHUB_USERNAME/ascend-api:latest
 
-    depends_on:
-      sqlserver:
-        condition: service_healthy
+  depends_on:
+    sqlserver:
+      condition: service_healthy
 
-    environment:
+  environment:
 
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+    ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
 
-      ConnectionStrings__DefaultConnection: ${CONNECTION_STRING}
+    ConnectionStrings__DefaultConnection: ${CONNECTION_STRING}
 
-      JwtSettings__Issuer: ${JWT_ISSUER}
-      JwtSettings__Audience: ${JWT_AUDIENCE}
-      JwtSettings__SecretKey: ${JWT_SECRET}
+    JwtSettings__Issuer: ${JWT_ISSUER}
+    JwtSettings__Audience: ${JWT_AUDIENCE}
+    JwtSettings__SecretKey: ${JWT_SECRET}
 
-      GeminiSettings__GeminiApiKey: ${GEMINI_API_KEY}
-      GeminiSettings__DefaultModel: ${GEMINI_MODEL}
+    GeminiSettings__GeminiApiKey: ${GEMINI_API_KEY}
+    GeminiSettings__DefaultModel: ${GEMINI_MODEL}
 
-      GoogleSettings__ClientId: ${GOOGLE_CLIENT_ID}
+    GoogleSettings__ClientId: ${GOOGLE_CLIENT_ID}
 
-    ports:
-      - "${BACKEND_PORT}:8080"
+  ports:
+    - "${BACKEND_PORT}:8080"
 
-    restart: unless-stopped
+  restart: unless-stopped
 
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "--fail",
-          "--silent",
-          "--show-error",
-          "http://localhost:8080/health"
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 40s
+  healthcheck:
+    test:
+      [
+        "CMD",
+        "curl",
+        "--fail",
+        "--silent",
+        "--show-error",
+        "http://localhost:8080/health"
+      ]
+    interval: 30s
+    timeout: 10s
+    retries: 10
+    start_period: 40s
 
-    networks:
-      - ascend-network
+  networks:
+    - ascend-network
 
 
   frontend:
 
     container_name: ascend-frontend
-
-    build:
-      context: .
-      dockerfile: Dockerfile
 
     depends_on:
       api:
