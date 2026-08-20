@@ -68,3 +68,22 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ascend-frontend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/ascend-frontend:${{ github.sha }}
+
+  deploy:
+    name: Deploy to Linux Server
+    runs-on: self-hosted
+    needs: docker-push
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+
+    steps:
+      - name: Deploy application
+        run: |
+          cd ~/AI-Portfolio-Platform-UI
+          docker compose pull
+          docker compose up -d --remove-orphans
+
+      - name: Verify containers
+        run: |
+          cd ~/AI-Portfolio-Platform-UI
+          docker compose ps
