@@ -36,11 +36,8 @@ jobs:
       - name: Build frontend
         run: npm run build
 
-      - name: Build Docker image
-        run: docker build -t ascend-frontend:ci .
-
   docker-push:
-    name: Build & Push Docker Image
+    name: Build & Push Frontend Docker Image
     runs-on: ubuntu-latest
     needs: frontend-ci
 
@@ -80,10 +77,23 @@ jobs:
       - name: Deploy application
         run: |
           cd ~/AI-Portfolio-Platform-UI
-          docker compose pull
-          docker compose up -d --remove-orphans
 
-      - name: Verify containers
+          echo "Pulling latest Docker images..."
+          docker compose --env-file compose.env pull
+
+          echo "Starting updated containers..."
+          docker compose --env-file compose.env up -d --remove-orphans
+
+          echo "Deployment completed."
+
+      - name: Verify deployment
         run: |
           cd ~/AI-Portfolio-Platform-UI
-          docker compose ps
+
+          echo "Container status:"
+          docker compose --env-file compose.env ps
+
+          echo "API health:"
+          curl --fail http://localhost:7043/health
+
+          echo "Deployment verification successful."
